@@ -1,3 +1,4 @@
+
 const { hairlineWidth, platformSelect } = require('nativewind/theme');
 
 /** @type {import('tailwindcss').Config} */
@@ -7,6 +8,14 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
+      fontFamily: {
+        italic: ["Poppins-Italic", "sans-serif"],
+        regular: ["Poppins-Regular", "sans-serif"],
+        medium: ["Poppins-Medium", "sans-serif"],
+        semibold: ["Poppins-SemiBold", "sans-serif"],
+        bold: ["Poppins-Bold", "sans-serif"],
+        // black: ["Poppins-Black", "sans-serif"],
+      },
       colors: {
         border: withOpacity('border'),
         input: withOpacity('input'),
@@ -64,3 +73,12 @@ function withOpacity(variableName) {
     });
   };
 }
+
+
+// colors: {
+//   light: {
+//     text: "#1E1E1E",
+//     background: "#F5F2EA",
+//     primary: "#CBA135",
+//   },
+// },
