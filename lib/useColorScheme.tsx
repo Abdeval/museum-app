@@ -37,7 +37,10 @@ function useColorScheme() {
 function useInitialAndroidBarSync() {
   const { colorScheme } = useColorScheme();
   React.useEffect(() => {
-    if (Platform.OS !== 'android') return;
+    if (Platform.OS !== 'android') {
+      console.log('No android is detected...');
+      return;
+    }
     setNavigationBar(colorScheme).catch((error) => {
       console.error('useColorScheme.tsx", "useInitialColorScheme', error);
     });
@@ -47,6 +50,11 @@ function useInitialAndroidBarSync() {
 export { useColorScheme, useInitialAndroidBarSync };
 
 function setNavigationBar(colorScheme: 'light' | 'dark') {
+  if (Platform.OS !== 'android') {
+    console.log('not android');
+    return Promise.resolve(); // Do nothing for non-Android platforms
+  }
+
   return Promise.all([
     NavigationBar.setButtonStyleAsync(colorScheme === 'dark' ? 'light' : 'dark'),
     NavigationBar.setPositionAsync('absolute'),

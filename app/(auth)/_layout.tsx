@@ -1,15 +1,23 @@
-import React from 'react'
-import { Stack } from 'expo-router'
+import CustomHeader from "@/components/ui/CustomHeader";
+import { Stack } from "expo-router";
 
-export default function AuthLayout() {
+export default function Layout() {
   return (
-    <Stack >
-        <Stack.Screen name='sign-in' options={{
-            headerShown: false
-        }}/>
-        <Stack.Screen name='welcome' options={{
-            headerShown: false
-        }}/>
+    <Stack>
+      <Stack.Screen
+        name="sign-in"
+        options={{
+          header: () => <CustomHeader type="welcome" content="welcome to"/>
+
+        }}
+      />
+      <Stack.Screen
+        name="welcome"
+        options={{
+          header: () => <CustomHeader type="landing" content="Are you ready ?"/>
+
+        }}
+      />
     </Stack>
-  )
+  );
 }

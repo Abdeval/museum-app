@@ -8,6 +8,14 @@ module.exports = function (api) {
     ],
     plugins: [
       [
+        'module-resolver',
+        {
+          alias: {
+            '@': './',
+          },
+        },
+      ],
+      [
         'react-native-iconify/babel',
         {
           icons: [
@@ -30,7 +38,10 @@ module.exports = function (api) {
             'solar:close-circle-bold-duotone',
             "solar:chat-round-line-bold-duotone",
             "solar:card-search-bold-duotone",
-            "solar:face-scan-square-bold-duotone"
+            "solar:face-scan-square-bold-duotone",
+            "logos:google-icon",
+            "ic:sharp-apple",
+            "solar:gallery-edit-bold-duotone"
             // "solar:*"
           ],
         },
