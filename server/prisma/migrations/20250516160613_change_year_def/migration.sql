@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Exhibit" ALTER COLUMN "year" DROP NOT NULL,
+ALTER COLUMN "year" SET DATA TYPE TEXT;

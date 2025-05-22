@@ -1,0 +1,123 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id Int [pk, increment]
+  email String [unique, not null]
+  name String
+  password String [not null]
+  avatar String [not null, default: '/assets/avatars/1.png']
+  visits Visit [not null]
+  favorites Favorite [not null]
+  chats Chat [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table Exhibit {
+  id Int [pk, increment]
+  title String [not null]
+  description String [not null]
+  year String
+  thematic_category ThematicCategories [not null]
+  chronological_category ChronologicalCategories [not null]
+  model3D Model3D
+  images Image [not null]
+  visits Visit [not null]
+  favorites Favorite [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table Model3D {
+  id Int [pk, increment]
+  fileUrl String [not null]
+  exhibit Exhibit [not null]
+  exhibitId Int [unique, not null]
+}
+
+Table Visit {
+  id Int [pk, increment]
+  user User [not null]
+  userId Int [not null]
+  exhibit Exhibit [not null]
+  exhibitId Int [not null]
+  visitedAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (userId, exhibitId) [unique]
+  }
+}
+
+Table Favorite {
+  id Int [pk, increment]
+  user User [not null]
+  userId Int [not null]
+  exhibit Exhibit [not null]
+  exhibitId Int [not null]
+  addedAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (userId, exhibitId) [unique]
+  }
+}
+
+Table Image {
+  id Int [pk, increment]
+  url String [not null]
+  exhibit Exhibit [not null]
+  exhibitId Int [not null]
+  altText String
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table Chat {
+  id Int [pk, increment]
+  user User [not null]
+  userId Int [not null]
+  messages Message [not null]
+  startedAt DateTime [default: `now()`, not null]
+}
+
+Table Message {
+  id Int [pk, increment]
+  chat Chat [not null]
+  chatId Int [not null]
+  sender SenderType [not null]
+  content String [not null]
+  sentAt DateTime [default: `now()`, not null]
+}
+
+Enum ThematicCategories {
+  PAINTING
+  ARTIFACT
+  HISTORY
+  CULTURE
+}
+
+Enum ChronologicalCategories {
+  ANCIENT_ALGERIA
+  ISLAMIC_AND_BERBER_DYNASTIES
+  OTTOMAN_AND_COLONIAL_ALGERIA
+  MODERN_AND_CONTEMPORARY_ALGERIA
+}
+
+Enum SenderType {
+  USER
+  BOT
+}
+
+Ref: Model3D.exhibitId - Exhibit.id
+
+Ref: Visit.userId > User.id
+
+Ref: Visit.exhibitId > Exhibit.id
+
+Ref: Favorite.userId > User.id
+
+Ref: Favorite.exhibitId > Exhibit.id
+
+Ref: Image.exhibitId > Exhibit.id
+
+Ref: Chat.userId > User.id
+
+Ref: Message.chatId > Chat.id

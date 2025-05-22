@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+// generator dbml {
+//   provider = "prisma-dbml-generator"
+//   output   = "../dbml"
+//   outputName = "amuse.dbml"
+// }
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  name      String?
+  password  String
+  avatar    String    @default("/assets/avatars/1.png")
+  visits    Visit[]
+  favorites Favorite[]
+  chats     Chat[]
+  createdAt DateTime   @default(now())
+}
+
+model Exhibit {
+  id                     Int                     @id @default(autoincrement())
+  title                  String
+  description            String
+  year                   String?
+  thematic_category      ThematicCategories
+  chronological_category ChronologicalCategories
+  model3D                Model3D?
+  images                 Image[]
+  visits                 Visit[]
+  favorites              Favorite[]
+  recommendedIn          RecommendedExhibit[]
+  createdAt              DateTime                @default(now())
+}
+
+model Model3D {
+  id        Int     @id @default(autoincrement())
+  fileUrl   String  // example: "/uploads/models/exhibit1.glb"
+  exhibit   Exhibit @relation(fields: [exhibitId], references: [id], onDelete: Cascade)
+  exhibitId Int     @unique
+}
+
+enum ThematicCategories {
+  PAINTING
+  ARTIFACT
+  HISTORY
+  CULTURE
+}
+
+enum ChronologicalCategories {
+  ANCIENT_ALGERIA
+  ISLAMIC_AND_BERBER_DYNASTIES
+  OTTOMAN_AND_COLONIAL_ALGERIA
+  MODERN_AND_CONTEMPORARY_ALGERIA
+}
+
+model Visit {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  exhibit   Exhibit  @relation(fields: [exhibitId], references: [id], onDelete: Cascade)
+  exhibitId Int
+  visitedAt DateTime @default(now())
+
+  @@unique([userId, exhibitId])
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  exhibit   Exhibit  @relation(fields: [exhibitId], references: [id], onDelete: Cascade)
+  exhibitId Int
+  addedAt   DateTime @default(now())
+
+  @@unique([userId, exhibitId]) 
+}
+
+model Image {
+  id        Int      @id @default(autoincrement())
+  url       String
+  exhibit   Exhibit  @relation(fields: [exhibitId], references: [id], onDelete: Cascade)
+  exhibitId Int
+  altText   String?
+  createdAt DateTime @default(now())
+}
+
+model Chat {
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  messages  Message[]
+  startedAt DateTime  @default(now())
+  title     String?   @default("Chat with Amuse")
+}
+
+model Message {
+  id             Int                  @id @default(autoincrement())
+  chat           Chat                 @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId         Int
+  sender         SenderType
+  content        String
+  sentAt         DateTime             @default(now())
+  isVoice        Boolean              @default(false)
+
+  recommendations RecommendedExhibit[]
+}
+
+model RecommendedExhibit {
+  id         Int      @id @default(autoincrement())
+  message    Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId  Int
+  exhibit    Exhibit  @relation(fields: [exhibitId], references: [id], onDelete: Cascade)
+  exhibitId  Int
+}
+
+
+enum SenderType {
+  USER
+  BOT
+}
