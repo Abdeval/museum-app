@@ -1,12 +1,12 @@
-import { Dimensions, View, ViewToken } from "react-native";
+import { SliderProps } from "@/types";
 import React, { useRef, useState } from "react";
-import { SliderProps } from "@/lib/types";
+import { Dimensions, View, ViewToken } from "react-native";
 import Animated, {
-  useAnimatedScrollHandler,
-  useSharedValue,
+    useAnimatedScrollHandler,
+    useSharedValue,
 } from "react-native-reanimated";
-import SliderItem from "./SliderItem";
 import Pagination from "./Pagination";
+import SliderItem from "./SliderItem";
 const width = Dimensions.get("screen").width;
 // const height = Dimensions.get("screen").height;
 
@@ -44,7 +44,7 @@ export default function Slider({ museumImages }: SliderProps) {
   return (
     <View>
       <Animated.FlatList
-        className="h-[85%]"
+        className=""
         data={museumImages}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item, index }) => (

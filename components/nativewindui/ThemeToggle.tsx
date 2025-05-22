@@ -3,11 +3,13 @@ import { Pressable, View } from 'react-native';
 import Animated, { LayoutAnimationConfig, ZoomInRotate } from 'react-native-reanimated';
 
 import { cn } from '@/lib/cn';
-import { useColorScheme } from '@/lib/useColorScheme';
+// import { useColorScheme } from '@/lib/useColorScheme';
 import { COLORS } from '@/theme/colors';
+import { useColorScheme } from 'nativewind';
 
 export function ThemeToggle() {
   const { colorScheme, setColorScheme } = useColorScheme();
+  
   return (
     <LayoutAnimationConfig skipEntering>
       <Animated.View

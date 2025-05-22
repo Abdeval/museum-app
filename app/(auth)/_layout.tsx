@@ -1,4 +1,3 @@
-import CustomHeader from "@/components/ui/CustomHeader";
 import { Stack } from "expo-router";
 
 export default function Layout() {
@@ -7,15 +6,13 @@ export default function Layout() {
       <Stack.Screen
         name="sign-in"
         options={{
-          header: () => <CustomHeader type="welcome" content="welcome to"/>
-
+          headerShown: false
         }}
       />
       <Stack.Screen
-        name="welcome"
+        name="sign-up"
         options={{
-          header: () => <CustomHeader type="landing" content="Are you ready ?"/>
-
+          headerShown: false
         }}
       />
     </Stack>

@@ -1,0 +1,63 @@
+{
+  "welcome": "Bienvenue dans notre application !",
+  "appName": "AMUSE - Guide d'exposition",
+  "description": "Explorez les expositions et découvrez l'histoire avec un guide intelligent.",
+
+  "navigation": {
+    "home": "Accueil",
+    "exhibits": "Expositions",
+    "scanner": "Scanner QR",
+    "chatbot": "Assistant",
+    "settings": "Paramètres",
+    "language": "Langue"
+  },
+
+  "exhibit": {
+    "title": "Titre de l'exposition",
+    "description": "Description",
+    "noExhibits": "Aucune exposition disponible pour le moment.",
+    "view3D": "Voir en 3D",
+    "recommended": "Expositions recommandées"
+  },
+
+  "scanner": {
+    "title": "Scanner un code QR",
+    "instructions": "Pointez votre caméra vers un code QR pour voir les détails de l'exposition.",
+    "noCamera": "Accès à la caméra non disponible."
+  },
+
+  "chatbot": {
+    "title": "Assistant du musée",
+    "inputPlaceholder": "Posez votre question ici...",
+    "loading": "Chargement...",
+    "noResponse": "Désolé, je n'ai pas compris. Veuillez réessayer.",
+    "recommendations": "Suggestions d'exposition"
+  },
+
+  "settings": {
+    "title": "Paramètres",
+    "selectLanguage": "Choisir la langue",
+    "currentLanguage": "Langue actuelle",
+    "reset": "Réinitialiser",
+    "save": "Enregistrer les paramètres"
+  },
+
+  "languages": {
+    "ar": "Arabe",
+    "en": "Anglais",
+    "fr": "Français"
+  },
+
+  "errors": {
+    "network": "Erreur réseau. Veuillez réessayer plus tard.",
+    "unknown": "Une erreur inattendue est survenue."
+  },
+
+  "common": {
+    "ok": "OK",
+    "cancel": "Annuler",
+    "yes": "Oui",
+    "no": "Non",
+    "back": "Retour"
+  }
+}

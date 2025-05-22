@@ -1,13 +1,13 @@
-import { Dimensions, View } from "react-native";
+import { cn } from "@/lib/cn";
+import { MuseumImage } from "@/types";
 import React from "react";
-import { MuseumImage } from "@/lib/types";
+import { Dimensions, View } from "react-native";
 import Animated, {
     Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
+    interpolate,
+    SharedValue,
+    useAnimatedStyle,
 } from "react-native-reanimated";
-import { cn } from "@/lib/cn";
 
 type Props = {
   items: MuseumImage[];
@@ -21,7 +21,7 @@ export default function Pagination({ items, paginationIndex, scrollX }: Props) {
   
 
   return (
-    <View className="flex-row h-[40px] items-center justify-center gap-1">
+    <View className="flex-row items-center justify-center gap-1">
       {items.map((_, index) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const paginationStyle = useAnimatedStyle(() => {

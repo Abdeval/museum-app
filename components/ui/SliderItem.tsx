@@ -1,15 +1,14 @@
-import { View, Dimensions, Image } from "react-native";
-import React from "react";
-import { MuseumImage } from "@/lib/types";
-import Animated, {
-  Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-} from "react-native-reanimated";
 import { Text } from "@/components/nativewindui/Text";
+import { MuseumImage } from "@/types";
 import { LinearGradient } from "expo-linear-gradient";
-import { COLORS } from "@/constants/Colors";
+import React from "react";
+import { Dimensions, Image, View } from "react-native";
+import Animated, {
+    Extrapolation,
+    interpolate,
+    SharedValue,
+    useAnimatedStyle,
+} from "react-native-reanimated";
 
 type Props = {
   item: MuseumImage;
