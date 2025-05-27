@@ -363,14 +363,14 @@ export default function SignInScreen() {
                   </TouchableOpacity>
 
                   {/* Apple Login */}
-                  {appleAuthAvailable && (
+                  {/* {appleAuthAvailable && (
                     <TouchableOpacity
                       className="bg-white p-4 rounded-full"
                       onPress={handleAppleSignIn}
                     >
                       <Ionicons name="logo-apple" size={24} color="white" />
                     </TouchableOpacity>
-                  )}
+                  )} */}
                 </View>
 
                 {/* Don't have an account */}
