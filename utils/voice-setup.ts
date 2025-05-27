@@ -44,9 +44,10 @@ interface ToggleRecordingProps {
 
 // Specific interface for speakText function
 interface SpeakTextProps {
-  text: string
-  setIsSpeaking: (value: boolean) => void
-  isSpeaking: boolean
+  text: string;
+  setIsSpeaking: (value: boolean) => void;
+  isSpeaking: boolean;
+  lang: "en" | "fr" | "ar"
 }
 
 // Specific interface for stopSpeaking function
@@ -196,7 +197,7 @@ export const startRecording = async ({
       setIsRecording(true)
       startPulseAnimation()
     } catch (error: any) {
-      console.error("Error starting voice recording:", error)
+      // ! console.error("Error starting voice recording:", error)
 
       // Check if this is a "not available" error
       const errorMessage = error.message || String(error)
@@ -265,16 +266,18 @@ export const toggleRecording = ({
 }
 
 // Speak text using text-to-speech
-export const speakText = async ({ text, setIsSpeaking, isSpeaking }: SpeakTextProps): Promise<void> => {
+export const speakText = async ({ text, setIsSpeaking, isSpeaking, lang }: SpeakTextProps): Promise<void> => {
   // Stop any ongoing speech
   if (isSpeaking) {
     Speech.stop()
+    setIsSpeaking(false);
+    return;
   }
 
   // Start new speech
   setIsSpeaking(true)
   Speech.speak(text, {
-    language: "en",
+    language: lang,
     pitch: 1.0,
     rate: 0.9,
     onDone: () => setIsSpeaking(false),

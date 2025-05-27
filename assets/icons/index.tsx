@@ -1,6 +1,5 @@
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
-import { colorScheme } from "nativewind";
 
 export const Icons = {
   inProgress: <Iconify icon="lets-icons:progress" size={24} color={"green"} />,

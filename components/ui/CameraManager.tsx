@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { StyleSheet } from "react-native"
-import { CameraView, type BarcodeScanningResult, FlashMode } from "expo-camera"
+import { CameraView, type BarcodeScanningResult } from "expo-camera"
 
 interface CameraManagerProps {
   isActive: boolean

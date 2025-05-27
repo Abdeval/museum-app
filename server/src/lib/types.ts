@@ -1,8 +1,10 @@
 export interface ChatHistoryItemType {
   id: number;
   preview: string;
-  timestamp: Date;
+  timestamp: string;
   isVoice: boolean;
+  messages?: number;
+  exhibits?: number;
 }
 
 export interface GroupedChats {

@@ -5,6 +5,8 @@ import Iconify from "react-native-iconify";
 import { COLORS } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import TransText from "./TransText";
+import { navigationItems } from "@/lib/data";
 
 type HeaderType = "welcome" | "home" | "scan" | "chat" | "exhibit" | "landing";
 
@@ -51,9 +53,7 @@ export default function CustomHeader({
         </View>
 
         <View className="items-center flex-row gap-1 pr-4">
-          <Text className="font-semibold capitalize" variant={"title2"}>
-            {content}
-          </Text>
+          <TransText title={navigationItems.includes(content) ? `navigation.${content}` : content} className="font-semibold capitalize text-2xl text-foreground"/>
           {type === "welcome" && (
             <Text className="font-bold" variant={"title3"}>
               AMUSE

@@ -1,12 +1,12 @@
-import { isFavorited, useManageFavorites } from "@/hooks/useFavorite";
 import { ExhibitType, FavoriteType } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { Router } from "expo-router";
 import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import Animated from "react-native-reanimated";
 import ExhibitCard from "./ExhibitCard";
 import FavoritedExhibitsSkeleton from "./loading/FavoritedExhibitsSkeleton";
+import TransText from "./TransText";
 
 interface FavoritedExhibitsCardsProps {
   FadeInRight: any;
@@ -30,7 +30,6 @@ export default function FavoritedExhibitsCards({
   };
 
   // ! manage the favorites
-  const { deleteFromFavorites } = useManageFavorites();
 
   return (
     <Animated.View entering={FadeInRight.duration(400)}>
@@ -48,12 +47,11 @@ export default function FavoritedExhibitsCards({
                   className="mb-4"
                 >
                   <ExhibitCard
-                    isFavorited={isFavorited(exhibit.id, exhibits)}
+                    // isFavorited={isFavorited(exhibit.id, exhibits)}
                     favId={favorited.id}
-                    // addToFavorites={handleAddToFavorites}
-                    deleteFromFavorites={deleteFromFavorites}
                     type={"fav"}
                     exhibit={exhibit}
+                    // userId={userId}
                     key={index}
                     onPress={() => navigateToExhibit(exhibit.id)}
                   />
@@ -65,17 +63,12 @@ export default function FavoritedExhibitsCards({
       ) : (
         <View className="items-center justify-center pt-4">
           <Ionicons name="heart-outline" size={60} color={'red'} />
-          <Text className="text-foreground text-lg mt-4">
-            No favorite exhibits yet
-          </Text>
-          <Text className="text-gray-400 text-center mt-2 px-10">
-            Tap the heart icon on any exhibit to add it to your favorites
-          </Text>
+          <TransText title='favorites.noFavorites' className="text-foreground text-lg mt-4"/>
           <TouchableOpacity
             onPress={() => router.push("/exhibit")}
             className="bg-primary mt-6 py-3 px-6 rounded-lg"
           >
-            <Text className="text-white font-bold">Explore Exhibits</Text>
+            <TransText title="favorites.explore" className="text-white font-bold"/>
           </TouchableOpacity>
         </View>
       )}

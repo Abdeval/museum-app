@@ -1,40 +1,46 @@
 import { BACKEND_BASE_URL } from "@/constants";
-import { COLORS } from "@/constants/Colors";
 import { ExhibitType } from "@/types";
-import { Ionicons } from "@expo/vector-icons";
 import { Image, Text, TouchableOpacity, View } from "react-native";
+import TransText from "./TransText";
+import LRView from "./LRView";
+import Iconify from "react-native-iconify";
+import FavoriteButton from "./FavoriteButton";
+import { useManageFavorites } from "@/hooks/useFavorite";
+import { useSession } from "@/context/AuthProvider";
 
 interface ExhibitCardProps {
   type?: "fav" | "default";
   exhibit: ExhibitType | any;
   onPress: () => void;
+  // userId: number;
   addToFavorites?: (exhibitId: number) => void;
   favId?: number;
+  addVisit?: (exhibitId: number) => void;
   deleteFromFavorites?: (id: number) => void;
-  isFavorited: boolean;
+  // isFavorited: boolean;
 }
 
 export default function ExhibitCard({
   type = "default",
   exhibit,
   onPress,
-  addToFavorites,
+  // userId,
   favId,
-  deleteFromFavorites,
-  isFavorited = false,
+  addVisit
 }: ExhibitCardProps) {
-  
-  const handleFavoriteChange = (exhibitId: number) => {
-    if (isFavorited && deleteFromFavorites) {
-      console.log("deleting : favorites", isFavorited);
-      deleteFromFavorites(favId as number);
+
+  // const { addVisit } = useVisit(0);
+  const { handleFavoriteChange } = useManageFavorites();
+  const { user } = useSession();
+
+  const handleAddingToVisits = (exhibitId: number) => {
+    if(addVisit) { 
+      console.log('visit created...');
+      addVisit(exhibitId);
     }
-    if (!isFavorited && addToFavorites) {
-      console.log("adding : favorites", isFavorited);
-      addToFavorites(exhibitId);
-    }
-  };
-  
+  }
+
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -49,7 +55,7 @@ export default function ExhibitCard({
         className="w-full h-[150px]"
         resizeMode="cover"
       />
-      <View className="p-2">
+      <View className="p-2 py-4">
         <Text
           className="text-primary font-bold text-base mb-1"
           numberOfLines={1}
@@ -57,34 +63,51 @@ export default function ExhibitCard({
           {exhibit.title}
         </Text>
         <Text className="text-gray-500 text-xs mb-2">
-          {exhibit.thematic_category} • {exhibit.year}
+          <TransText
+            title={`categories.${exhibit.thematic_category.toLowerCase()}`}
+          />{" "}
+          • {exhibit.year}
         </Text>
-        <Text className="text-gray-700 text-sm" numberOfLines={2}>
+        <Text className="text-foreground/60 text-sm" numberOfLines={2}>
           {exhibit.description}
         </Text>
       </View>
 
       {type === "fav" && (
-        <View className="px-2 pb-2">
+        <LRView className="px-2 pb-2">
           <TouchableOpacity
             onPress={onPress}
             className="bg-primary/10 py-2 px-4 rounded-lg mt-3 self-start"
           >
-            <Text className="text-primary font-medium">View Details</Text>
+            <TransText
+              title="favorites.viewDetail"
+              className="text-primary font-medium"
+            />
           </TouchableOpacity>
-        </View>
+        </LRView>
       )}
-
-      <TouchableOpacity
-        onPress={() => handleFavoriteChange(exhibit.id)}
-        className="top-2 right-2 absolute"
-      >
-        <Ionicons
-          name="heart"
-          size={24}
-          color={isFavorited ? "red" : COLORS.light.primary}
-        />
-      </TouchableOpacity>
+      <View className="top-2 right-2 absolute flex-row gap-2">
+        <TouchableOpacity onPress={() => handleAddingToVisits(exhibit.id)}>
+          <Iconify
+            icon="solar:add-circle-bold-duotone"
+            size={24}
+            color={'white'}
+          />
+        </TouchableOpacity>
+        {/* <TouchableOpacity onPress={() => handleFavoriteChange(exhibit.id)}>
+          <Ionicons
+            name="heart"
+            size={24}
+            color={isFavorited ? "red" : COLORS.light.primary}
+          />
+        </TouchableOpacity> */}
+        <FavoriteButton exhibitId={exhibit.id} onToggle={(isFavorite: boolean) => handleFavoriteChange({
+          exhibitId: exhibit.id,
+          userId: Number(user?.id),
+          isFavorite,
+          favId
+        })}/>
+      </View>
     </TouchableOpacity>
   );
 }

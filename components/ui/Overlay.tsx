@@ -1,24 +1,33 @@
-"use client"
 
 import { COLORS } from "@/constants/Colors"
 import { useEffect, useRef } from "react"
-import { View, Dimensions, Animated } from "react-native"
+import { View, Dimensions, Animated, Text, ActivityIndicator } from "react-native"
 import Svg, { Rect, Defs, Mask, Line } from "react-native-svg"
+import { Ionicons } from "@expo/vector-icons"
 
 const { width, height } = Dimensions.get("window")
 const cutOutSize = 250
 const cornerLength = 30
 const cornerWidth = 4
 
-export default function Overlay({ isScanning }: { isScanning: boolean }) {
+interface OverlayProps {
+  isScanning: boolean
+  scanResult: string | null
+}
+
+export default function Overlay({ isScanning, scanResult }: OverlayProps) {
   const centerX = width / 2 - cutOutSize / 2
   const centerY = height / 2 - cutOutSize / 2
 
   // Animation for scanning effect
   const scanAnimation = useRef(new Animated.Value(0)).current
+  
+  // Animation for success/error feedback
+  const feedbackOpacity = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
     if (isScanning) {
+      // Start scanning animation
       Animated.loop(
         Animated.sequence([
           Animated.timing(scanAnimation, {
@@ -33,14 +42,25 @@ export default function Overlay({ isScanning }: { isScanning: boolean }) {
           }),
         ]),
       ).start()
+      
+      // Reset feedback opacity
+      feedbackOpacity.setValue(0)
     } else {
+      // Stop scanning animation
       scanAnimation.stopAnimation()
+      
+      // Show feedback
+      Animated.timing(feedbackOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start()
     }
 
     return () => {
       scanAnimation.stopAnimation()
     }
-  }, [isScanning, scanAnimation])
+  }, [isScanning, scanAnimation, feedbackOpacity])
 
   return (
     <View className="absolute w-full h-full">
@@ -145,19 +165,40 @@ export default function Overlay({ isScanning }: { isScanning: boolean }) {
         />
       )}
 
-      {/* Border around the cutout */}
-      {/* <View
-        style={{
-          position: "absolute",
-          top: centerY,
-          left: centerX,
-          width: cutOutSize,
-          height: cutOutSize,
-          borderWidth: 2,
-          borderColor: COLORS.light.primary,
-          borderRadius: 10,
-        }}
-      /> */}
+      {/* Success/Error Feedback Overlay */}
+      {!isScanning && (
+        <Animated.View
+          style={{
+            position: "absolute",
+            top: centerY,
+            left: centerX,
+            width: cutOutSize,
+            height: cutOutSize,
+            backgroundColor: "rgba(0,0,0,0.7)",
+            borderRadius: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            opacity: feedbackOpacity,
+          }}
+        >
+          {scanResult ? (
+            <View className="items-center">
+              <View className="bg-primary/90 rounded-full p-3 mb-2">
+                <Ionicons name="checkmark" size={30} color="white" />
+              </View>
+              <ActivityIndicator size="small" color={COLORS.light.primary} />
+              <Text className="text-white text-sm mt-2">Processing...</Text>
+            </View>
+          ) : (
+            <View className="items-center">
+              <View className="bg-red-500/90 rounded-full p-3 mb-2">
+                <Ionicons name="close" size={30} color="white" />
+              </View>
+              <Text className="text-white text-sm mt-2">Invalid QR Code</Text>
+            </View>
+          )}
+        </Animated.View>
+      )}
     </View>
   )
 }

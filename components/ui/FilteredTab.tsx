@@ -3,23 +3,28 @@ import React from "react";
 import { CategoryGroupType, ExhibitType } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "@/constants/Colors";
+import TransText from "./TransText";
+import LRView from "./LRView";
 
 interface FilteredTabProps {
   filteredExhibits: CategoryGroupType[];
   setFilteredExhibits: (exhibits: ExhibitType[]) => void;
   exhibits: ExhibitType[];
+  i18n: any;
 }
 
 export default function FilteredTab({
   filteredExhibits,
   setFilteredExhibits,
   exhibits,
+  i18n
 }: FilteredTabProps) {
   return (
     <View className="mb-6">
-      <Text className="text-foreground text-lg font-semibold mb-3">
-        Time Periods
-      </Text>
+      <TransText
+        title="search.filterTab"
+        className="text-foreground text-lg font-semibold mb-3"
+      />
       {filteredExhibits.map((period) => (
         <TouchableOpacity
           key={period.name}
@@ -29,19 +34,29 @@ export default function FilteredTab({
             );
             setFilteredExhibits(periodExhibits);
           }}
-          className="bg-white rounded-lg p-3 mb-2 flex-row justify-between items-center"
+          className="bg-white dark:bg-black rounded-lg p-3 mb-2 flex-row justify-between items-center"
         >
-          <Text className="text-foreground font-medium">{period.name}</Text>
-          <View className="flex-row items-center">
-            <Text className="text-gray-400 mr-2">
-              {period.exhibits.length} exhibits
-            </Text>
-            <Ionicons
-              name="chevron-forward"
-              size={16}
-              color={COLORS.light.primary}
+          <LRView>
+            {/* <Text >{period.name}</Text> */}
+            <TransText
+              title={period.name}
+              className="text-foreground/60 font-medium flex-1 text-wrap"
             />
-          </View>
+            <LRView className="flex-row items-center">
+              <LRView className="mr-2 gap-2">
+                <Text className="text-gray-400 ">{period.exhibits.length}</Text>
+                <TransText
+                  title="navigation.exhibits"
+                  className="text-gray-400 "
+                />
+              </LRView>
+              <Ionicons
+                name={i18n.language === 'ar' ? "chevron-back" : "chevron-forward"}
+                size={16}
+                color={COLORS.light.primary}
+              />
+            </LRView>
+          </LRView>
         </TouchableOpacity>
       ))}
     </View>

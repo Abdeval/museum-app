@@ -1,4 +1,3 @@
-"use client"
 
 import { View } from "react-native"
 import CustomHeader from "@/components/ui/CustomHeader"
@@ -21,23 +20,24 @@ export default function Chat() {
     router.push("/chat-history")
   }
 
-  // Handle creating a new chat
+  // ! Handle creating a new chat
   const handleAddNewChat = () => {
     // Clear the current chat and navigate to chat page
     // This will trigger the StartNewChat component to show
     clearCurrentChat()
+    console.log("from chat page clear the current chat to add a new chat: ", chatId);
     router.push("/chat")
   }
 
-  if (!userId) {
-    return <GlobalLoading page="Loading user" />
+  if (!userId || isLoadingCurrentChat) {
+    return <GlobalLoading page="chat" />
   }
 
   return (
     <View className="flex-1 w-full">
       <CustomHeader
         type="chat"
-        content="Museum Guide"
+        content="chatbot"
         navigateToHistoryChats={navigateToHistoryChats}
         handleAddNewChat={handleAddNewChat}
       />

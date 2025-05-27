@@ -1,16 +1,17 @@
 import { deleteApi, getApi, postApi } from "@/lib/api/axios-apis"
+import { FIRST_MESSAGE_ARABIC, FIRST_MESSAGE_ENGLISH, FIRST_MESSAGE_FRENCH } from "@/lib/data"
 import type { CreateChatDto, CreateMessageDto } from "@/server/src/chat/chat.dto"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useIsFocused } from "@react-navigation/native"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import { FIRST_MESSAGE } from "@/lib/data"
+import { useTranslation } from "react-i18next"
 
-// Enhanced useChat hook with better state management
+// ! Enhanced useChat hook with better state management
 export const useChat = (userId: number) => {
   const queryClient = useQueryClient()
 
   const {
-    data,
+    data: chats,
     isLoading: isLoadingChats,
     isError,
   } = useQuery({
@@ -20,25 +21,22 @@ export const useChat = (userId: number) => {
   })
 
   const {
-    mutate: add,
+    mutateAsync: add,
     data: newAddedChat,
     isPending: isAdding,
+
   } = useMutation({
     mutationKey: ["add-chat"],
     mutationFn: (dto: CreateChatDto) => postApi("/chats/create", dto),
+
     onSuccess: async (response: any) => {
-      const newChatId = response?.data?.data?.id
+      const newChatId = response?.data?.id
+      console.log("new added chat: ", newChatId);
+      await AsyncStorage.setItem("currentChatId", newChatId.toString())
 
-      if (newChatId) {
-        await AsyncStorage.setItem("currentChatId", newChatId.toString())
-
-        // Invalidate relevant queries
-        queryClient.invalidateQueries({ queryKey: ["chats"] })
-        queryClient.invalidateQueries({ queryKey: ["currentChat"] })
-        queryClient.invalidateQueries({ queryKey: ["chatMessages"] })
-
-        return response.data.data
-      }
+      queryClient.invalidateQueries({ queryKey: ["chats"] })
+      queryClient.invalidateQueries({ queryKey: ["currentChat"] })
+      queryClient.invalidateQueries({ queryKey: ["chatMessages"] })
     },
   })
 
@@ -62,28 +60,10 @@ export const useChat = (userId: number) => {
     },
   })
 
-  // Function to create a new chat with initial bot message
-  const createNewChat = async () => {
-    return new Promise((resolve) => {
-      add(
-        { userId },
-        {
-          onSuccess: (data) => {
-            resolve(data)
-          },
-          onError: () => {
-            resolve(null)
-          },
-        },
-      )
-    })
-  }
-
   return {
-    chats: data,
+    chats,
     isLoadingChats,
     isError,
-    createNewChat,
     addChat: add,
     newAddedChat,
     deleteChat: deleteM,
@@ -97,34 +77,36 @@ export const useChatMessages = (userId: number) => {
   const isFocused = useIsFocused()
   const queryClient = useQueryClient()
 
-  // Get the current chat ID from AsyncStorage
+  // ! Get the current chat ID from AsyncStorage
   const { data: currentChatId, isLoading: isLoadingChatId } = useQuery({
     queryKey: ["currentChatId"],
     queryFn: async () => {
       const storedChatId = await AsyncStorage.getItem("currentChatId")
       return storedChatId ? Number.parseInt(storedChatId) : null
     },
-    staleTime: 0, // Always refetch to ensure we have the latest
+    staleTime: 0, // ! Always refetch to ensure we have the latest
   })
 
-  // Get the current chat details
+  // ! Get the current chat details
   const { data: currentChat, isLoading: isLoadingCurrentChat } = useQuery({
     queryKey: ["currentChat", currentChatId],
     queryFn: () => getApi(`/chats/latest/${userId}/${currentChatId}`),
     enabled: !!currentChatId && isFocused,
   })
 
-  // Fallback to latest chat if no current chat is set
+  // ! Fallback to latest chat if no current chat is set
   const { data: latestChat, isLoading: isLoadingLatestChat } = useQuery({
     queryKey: ["latestChat", userId],
     queryFn: () => getApi(`/chats/latest/${userId}/null`),
     enabled: !currentChatId && !!userId && isFocused,
   })
 
-  // Determine which chat ID to use
-  const chatId = currentChatId || (latestChat && latestChat.id)
-
-  // Get messages for the current chat
+  // ! Determine which chat ID to use
+  // || (latestChat && latestChat.id)
+  let chatId = currentChatId;
+  
+  // console.log("before: ", chatId);
+  // ! Get messages for the current chat
   const {
     data: messages,
     isLoading: isLoadingMessages,
@@ -135,17 +117,20 @@ export const useChatMessages = (userId: number) => {
     enabled: !!chatId && isFocused,
   })
 
-  // Function to set a specific chat as current
+  // ! Function to set a specific chat as current
   const setCurrentChat = async (id: number) => {
     await AsyncStorage.setItem("currentChatId", id.toString())
     queryClient.invalidateQueries({ queryKey: ["currentChatId"] })
   }
 
-  // Function to clear the current chat
+  // ! Function to clear the current chat
   const clearCurrentChat = async () => {
     await AsyncStorage.removeItem("currentChatId")
     queryClient.invalidateQueries({ queryKey: ["currentChatId"] })
+    chatId = null;
   }
+
+  // console.log("after: ", chatId);
 
   return {
     chatId,
@@ -162,9 +147,26 @@ export const useChatMessages = (userId: number) => {
 // Enhanced hook for message operations
 export const useAddMessage = () => {
   const queryClient = useQueryClient()
+  const { i18n } = useTranslation();
+
+  let first_message;
+  switch (i18n.language) {
+    case "ar":
+      first_message = FIRST_MESSAGE_ARABIC;
+      break;
+    case "en":
+      first_message = FIRST_MESSAGE_ENGLISH;
+      break;
+    case "fr":
+      first_message = FIRST_MESSAGE_FRENCH;
+      break;
+    default:
+      first_message = FIRST_MESSAGE_ENGLISH;
+      break;
+  }
 
   const {
-    mutate,
+    mutateAsync,
     data: addedMessage,
     isPending: isAddingMessage,
   } = useMutation({
@@ -180,21 +182,21 @@ export const useAddMessage = () => {
     },
   })
 
-  // Function to add the first bot message to a new chat
+  // ! Function to add the first bot message to a new chat
   const addFirstMessage = async (chatId: number) => {
     if (!chatId) return
 
     const firstMessage: CreateMessageDto = {
-      content: FIRST_MESSAGE,
+      content: first_message,
       type: "BOT",
       chatId,
     }
 
-    mutate(firstMessage)
+    await mutateAsync(firstMessage);
   }
 
   return {
-    addMessage: mutate,
+    addMessage: mutateAsync,
     addedMessage,
     isAddingMessage,
     addFirstMessage,
@@ -224,3 +226,13 @@ export const useDeleteChat = () => {
     isDeleting: deleteAllMutation.isPending,
   }
 }
+
+
+// export const checkIfChatAlreadyExist = async (dto: CheckExistingChatDto) => {
+//   try{
+//      const res = postApi('/chats/history/existingChat', dto);
+//      return res.
+//   }catch(err: any){
+//       console.error(err.message);
+//   }
+// }

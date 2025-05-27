@@ -12,12 +12,12 @@ export const useVisit = (userId: number) => {
         enabled: !!userId
     });
 
-    const { mutate, data: newAddedVisit } = useMutation({
-        mutationKey: ['add-chat'],
+    const { mutate } = useMutation({
+        mutationKey: ['add-visit'],
         mutationFn: (dto: CreateFavoriteDto) => postApi('/exhibits/visits/create', dto),
         onSuccess: (variables: any) => {
             const data = variables.data;
-            console.log('New chat ID:', data.id);
+            console.log('New visit ID:', data.id);
             queryClient.invalidateQueries({
                 queryKey: ['visits']
             })
@@ -25,5 +25,5 @@ export const useVisit = (userId: number) => {
         }
     });
 
-    return { data, isLoading, isError, addChat: mutate, newAddedVisit };
+    return { data, isLoading, isError, addVisit: mutate };
 }

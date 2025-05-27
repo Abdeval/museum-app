@@ -5,12 +5,16 @@ import {
   Get,
   Param,
   Post,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { ExhibitService } from './exhibit.service';
-import { CreateExhibitDto, CreateFavoriteDto } from './exhibit.dto';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { CreateExhibitDto, CreateFavoriteDto, Model3DDto } from './exhibit.dto';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
@@ -18,6 +22,35 @@ import { extname } from 'path';
 export class ExhibitController {
   constructor(private readonly exhibitService: ExhibitService) {}
 
+  // ! Add 3D model
+  @Post('model3d/create')
+  @UseInterceptors(
+    FileInterceptor('model', {
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          if (file.fieldname === 'model') {
+            cb(null, './public/uploads/models');
+          } else {
+            cb(new Error('Unknown field'), '');
+          }
+        },
+        filename: (req, file, cb) => {
+          const ext = extname(file.originalname).toLowerCase();
+          const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+          cb(null, filename);
+        },
+      }),
+      limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
+    }),
+  )
+  create3DModel(
+    @Body() dto: Model3DDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.exhibitService.create3DModel(dto, file);
+  }
+
+  // ! create an exhibit
   @Post('create')
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -72,6 +105,17 @@ export class ExhibitController {
     return this.exhibitService.getRecommendedExhibits();
   }
 
+  @Delete('/delete/:id')
+  deleteExhibit(@Param('id') id: number) {
+    return this.exhibitService.deleteExhibit(id);
+  }
+
+  // ! get 3D model
+  @Get('/model3d/:exhibitId')
+  get3DModel(@Param('exhibitId') id: number) {
+    return this.exhibitService.get3DModel(id);
+  }
+
   // ? manage favorites
   @Post('/favorites/create')
   addToFavorites(@Body() dto: CreateFavoriteDto) {
@@ -89,6 +133,12 @@ export class ExhibitController {
     // @Param('exhibitId') exhibitId: number,
   ) {
     return this.exhibitService.getFavoritedExhibits(userId);
+  }
+
+  // ! get all favorited
+  @Get('/favorites/getAll')
+  getAllFavoritedExhibits() {
+    return this.exhibitService.getAllFavoritedExhibits();
   }
 
   // ? manage visits

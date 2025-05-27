@@ -25,6 +25,7 @@ Table Exhibit {
   images Image [not null]
   visits Visit [not null]
   favorites Favorite [not null]
+  recommendedIn RecommendedExhibit [not null]
   createdAt DateTime [default: `now()`, not null]
 }
 
@@ -76,6 +77,7 @@ Table Chat {
   userId Int [not null]
   messages Message [not null]
   startedAt DateTime [default: `now()`, not null]
+  title String [default: 'Chat with Amuse']
 }
 
 Table Message {
@@ -85,6 +87,16 @@ Table Message {
   sender SenderType [not null]
   content String [not null]
   sentAt DateTime [default: `now()`, not null]
+  isVoice Boolean [not null, default: false]
+  recommendations RecommendedExhibit [not null]
+}
+
+Table RecommendedExhibit {
+  id Int [pk, increment]
+  message Message [not null]
+  messageId Int [not null]
+  exhibit Exhibit [not null]
+  exhibitId Int [not null]
 }
 
 Enum ThematicCategories {
@@ -106,18 +118,22 @@ Enum SenderType {
   BOT
 }
 
-Ref: Model3D.exhibitId - Exhibit.id
+Ref: Model3D.exhibitId - Exhibit.id [delete: Cascade]
 
 Ref: Visit.userId > User.id
 
-Ref: Visit.exhibitId > Exhibit.id
+Ref: Visit.exhibitId > Exhibit.id [delete: Cascade]
 
 Ref: Favorite.userId > User.id
 
-Ref: Favorite.exhibitId > Exhibit.id
+Ref: Favorite.exhibitId > Exhibit.id [delete: Cascade]
 
-Ref: Image.exhibitId > Exhibit.id
+Ref: Image.exhibitId > Exhibit.id [delete: Cascade]
 
 Ref: Chat.userId > User.id
 
-Ref: Message.chatId > Chat.id
+Ref: Message.chatId > Chat.id [delete: Cascade]
+
+Ref: RecommendedExhibit.messageId > Message.id [delete: Cascade]
+
+Ref: RecommendedExhibit.exhibitId > Exhibit.id [delete: Cascade]

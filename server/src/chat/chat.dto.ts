@@ -46,3 +46,13 @@ export class CreateMessageDto {
   exhibits?: number[];
   // @IsOptional()
 }
+
+export class CheckExistingChatDto {
+  @IsString()
+  @IsNotEmpty()
+  message: string;
+
+  @IsInt()
+  @IsNotEmpty()
+  userId: number;
+}

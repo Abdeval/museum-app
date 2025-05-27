@@ -1,11 +1,15 @@
 import { useFavoritedExhibit, useRecommendedExhibit } from "@/hooks/useExhibit";
-import { isFavorited, useManageFavorites } from "@/hooks/useFavorite";
+// import { isFavorited } from "@/hooks/useFavorite";
 import { MUSEUM_EXHIBITS } from "@/lib/data";
 import { ExhibitType } from "@/types";
 import { Router } from "expo-router";
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import ExhibitCard from "./ExhibitCard";
+import TransText from "./TransText";
+import LRView from "./LRView";
+import FavoritedExhibitsSkeleton from "./loading/FavoritedExhibitsSkeleton";
+import { useVisit } from "@/hooks/useVisit";
 
 export default function RecommendedList({
   userId,
@@ -15,31 +19,33 @@ export default function RecommendedList({
   router: Router;
 }) {
   const { data: recommendedExhibits, isLoading } = useRecommendedExhibit();
-  const { data: favoriteExhibits } = useFavoritedExhibit(
-      Number(userId)
-  );
-  const { addToFavorites } = useManageFavorites();
+  // const { data: favoriteExhibits } = useFavoritedExhibit(Number(userId));
+  const { addVisit } = useVisit(userId);
+
   const navigateToExhibit = (exhibitId: number) => {
     router.push(`/exhibit/${exhibitId}`);
   };
 
-  const handleAddToFavorites = (exhibitId: number) => {
-    addToFavorites({ userId, exhibitId });    
-  }
 
   return (
     <View className="p-4">
-      <Text className="text-xl font-bold mb-4 text-foreground/80">
-        Featured Exhibits
-      </Text>
+      {!isLoading && (
+        <LRView className="pt-2">
+          <TransText
+            title="exhibit.recommended"
+            className="text-xl font-bold mb-4 text-foreground/80"
+          />
+        </LRView>
+      )}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {isLoading ? (
-          <Text>loading...</Text>
+          <FavoritedExhibitsSkeleton />
         ) : !recommendedExhibits ? (
           MUSEUM_EXHIBITS.map((exhibit) => {
             return (
               <ExhibitCard
-                isFavorited={false}
+                // userId={userId}
+                // isFavorited={false}
                 exhibit={exhibit}
                 key={exhibit.id}
                 onPress={() => navigateToExhibit(exhibit.id)}
@@ -50,10 +56,12 @@ export default function RecommendedList({
           recommendedExhibits.map((exhibit: ExhibitType) => {
             return (
               <ExhibitCard
-                addToFavorites={handleAddToFavorites}
-                isFavorited={isFavorited(exhibit.id, favoriteExhibits)} 
+                addVisit={(exhibitId: number) => addVisit({ userId, exhibitId})}
+                // addToFavorites={handleAddToFavorites}
+                // isFavorited={isFavorited(exhibit.id, favoriteExhibits)}
                 exhibit={exhibit}
                 key={exhibit.id}
+                // userId={userId}
                 onPress={() => navigateToExhibit(exhibit.id)}
               />
             );

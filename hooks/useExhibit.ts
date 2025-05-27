@@ -44,12 +44,21 @@ export const useFavoritedExhibit = (userId: number) => {
 
 export const useExhibitInfo = (id: number) => {
     const isFocused = useIsFocused()
-    const { data, isLoading, isError } = useQuery({
+    const { data: exhibit, isLoading: isLoadingExhibit, isError } = useQuery({
         queryKey: ['exhibit-info'],
         queryFn: () => getApi(`/exhibits/get/${id}`),
         subscribed: isFocused,
         enabled: !!id
     });
 
-    return { data, isLoading, isError };
+    return { exhibit, isLoadingExhibit, isError };
+}
+
+export const getExhibitById = async (id: number) => {
+    try{
+        const res = await getApi(`/exhibits/get/${id}`);
+        return res;
+    }catch(err: any){
+        console.log(err);
+    }
 }

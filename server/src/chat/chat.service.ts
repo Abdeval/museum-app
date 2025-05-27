@@ -1,6 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateChatDto, CreateMessageDto } from './chat.dto';
+import {
+  CheckExistingChatDto,
+  CreateChatDto,
+  CreateMessageDto,
+} from './chat.dto';
 import { Message } from 'generated/prisma';
 import { ChatHistoryItemType, GroupedChats } from 'src/lib/types';
 
@@ -189,6 +193,9 @@ export class ChatService {
           },
         },
       },
+      orderBy: {
+        sentAt: 'asc',
+      },
     });
 
     const messages = res.map((message) => {
@@ -228,12 +235,12 @@ export class ChatService {
     const previousChats: ChatHistoryItemType[] = [];
 
     chats.forEach((chat: any) => {
-      const chatDate = new Date(chat);
+      const chatDate = new Date(chat.startedAt);
       const preview =
         chat.messages && chat.messages.length > 0
           ? chat.messages[0].content.substring(0, 40) +
             (chat.messages[0].content.length > 40 ? '...' : '')
-          : 'New conversation';
+          : 'chatbot.newChat';
 
       // ! Determine if any messages were voice messages
       const hasVoiceMessages =
@@ -242,8 +249,10 @@ export class ChatService {
       const historyItem: ChatHistoryItemType = {
         id: chat.id,
         preview,
-        timestamp: chatDate,
+        timestamp: chatDate.toISOString(),
         isVoice: hasVoiceMessages,
+        messages: chat.messages.length,
+        exhibits: 0,
       };
 
       if (chatDate >= today) {
@@ -259,19 +268,35 @@ export class ChatService {
     const grouped: GroupedChats[] = [];
 
     if (todayChats.length > 0) {
-      grouped.push({ title: 'Today', data: todayChats });
+      grouped.push({ title: 'today', data: todayChats });
     }
 
     if (yesterdayChats.length > 0) {
-      grouped.push({ title: 'Yesterday', data: yesterdayChats });
+      grouped.push({ title: 'yesterday', data: yesterdayChats });
     }
 
     if (previousChats.length > 0) {
-      grouped.push({ title: 'Previous', data: previousChats });
+      grouped.push({ title: 'previous', data: previousChats });
     }
 
     console.log('Grouped chats:', grouped);
 
     return grouped;
+  }
+
+  // ! check for existing chat
+  async checkExistingChat(dto: CheckExistingChatDto) {
+    const { message, userId } = dto;
+    const chat = await this.prisma.chat.findFirst({
+      where: {
+        userId: userId, // Filter by the user
+        messages: {
+          some: {
+            content: message,
+          },
+        },
+      },
+    });
+    return chat;
   }
 }

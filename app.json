@@ -4,7 +4,7 @@
     "slug": "museum-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/ios-light.png",
+    "icon": "./assets/images/ios-dark.png",
     "scheme": "amuse",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
         "NSMicrophoneUsageDescription": "This app uses the microphone to enable voice input for the museum guide chatbot.",
         "NSSpeechRecognitionUsageDescription": "This app uses speech recognition to convert your voice to text for the museum guide chatbot."
       },
-      "bundleIdentifier": "amuse"
+      "bundleIdentifier": "com.abdou.oauthgoogle"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,10 +22,11 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.amuse",
+      "package": "com.abdou.oauthgoogle",
       "permissions": [
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "supportsRtl": true
     },
     "web": {
       "bundler": "metro",
@@ -56,6 +57,12 @@
         "expo-audio",
         {
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.383898926660-2nmio2r5vifq2nmene4c5oq4d25gmr91"
         }
       ],
       "expo-localization"

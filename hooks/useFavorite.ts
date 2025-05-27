@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 export const useManageFavorites = () => {
     const queryClient = useQueryClient();
 
-    const { mutate: add, data: newAddedFavorite } = useMutation({
+    const { mutate: add } = useMutation({
         mutationKey: ['add-chat'],
         mutationFn: (dto: CreateFavoriteDto) => postApi('/exhibits/favorites/create', dto),
         onSuccess: (variables: any) => {
@@ -16,7 +16,7 @@ export const useManageFavorites = () => {
             return data;
         }
     });
-    
+
     const { mutate: deleteM } = useMutation({
         mutationKey: ['add-chat'],
         mutationFn: (id: number) => deleteApi(`/exhibits/favorites/delete/${id}`),
@@ -29,12 +29,22 @@ export const useManageFavorites = () => {
         }
     });
 
+    const handleFavoriteChange = ({ exhibitId, userId, favId, isFavorite }: {
+        exhibitId: number;
+        userId: number;
+        favId?: number;
+        isFavorite: boolean
+    }) => {
+        // console.log("want to add to favorites: ", isFavorite);
+        if (isFavorite && favId) {
+            // console.log("deleting : favorites", isFavorite);
+            deleteM(favId as number);
+        }
+        if (!isFavorite) {
+            // console.log("adding : favorites", isFavorite);
+            add({ userId, exhibitId });
+        }
+    };
 
-    return { addToFavorites: add, newAddedFavorite, deleteFromFavorites: deleteM };
-}
-
-export const isFavorited = (exhibitId: number, favorites: any[]) => {
-    if (!favorites) return false;
-    const found = favorites.find((favorite) => favorite.exhibitId === exhibitId);
-    return found ? true : false;
+    return { handleFavoriteChange };
 }

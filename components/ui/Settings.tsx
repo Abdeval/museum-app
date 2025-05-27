@@ -4,32 +4,28 @@ import { useColorScheme } from "@/lib/useColorScheme";
 import { Icon } from "@roninoss/icons";
 import { COLORS } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useTranslation } from "react-i18next";
+// import TransText from "./TransText";
+import LanguagePicker from "./LanguagePicker";
 import TransText from "./TransText";
+import LRView from "./LRView";
 
 export default function Settings({ signOut }: { signOut: () => void }) {
   const { colorScheme, setColorScheme } = useColorScheme();
-  const { i18n } = useTranslation();
-
-  const toggleLanguage = async (lang: string) => {
-    await AsyncStorage.setItem("language", lang);
-    i18n.changeLanguage(lang);
-  };
 
   return (
     <View className="px-4">
-      <Text className="text-foreground text-lg font-semibold mb-4">
-        Settings
-      </Text>
+      <TransText
+        className="text-foreground text-lg font-semibold mb-4"
+        title="settings.title"
+      />
       <View className="bg-primary-foreground dark:bg-black rounded-lg overflow-hidden">
         <TouchableOpacity
           onPress={() => {
             setColorScheme(colorScheme === "dark" ? "light" : "dark");
           }}
-          className="flex-row justify-between items-center p-4 border-b border-border"
+          className="p-4 pr-6 border-b border-border"
         >
-          <View className="flex-row items-center">
+          <LRView className="justify-between w-full items-center">
             {colorScheme === "dark" ? (
               <Icon
                 namingScheme="sfSymbol"
@@ -43,75 +39,38 @@ export default function Settings({ signOut }: { signOut: () => void }) {
                 color={COLORS.light.primary}
               />
             )}
-            <Text className="text-foreground ml-3 capitalize">
-              {colorScheme} theme
-            </Text>
-          </View>
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color={COLORS.light.primary}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity className="flex-row justify-between items-center p-4 border-b border-border">
-          <View className="flex-row items-center">
-            <Ionicons
-              name="person-outline"
-              size={20}
-              color={COLORS.light.primary}
+            <TransText
+              title={`settings.${colorScheme}Mode`}
+              className="text-foreground ml-3"
             />
-            <Text className="text-foreground ml-3">Edit Profile</Text>
-          </View>
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color={COLORS.light.primary}
-          />
+          </LRView>
         </TouchableOpacity>
+        {/* change the lang */}
+        <LanguagePicker />
 
-        <TouchableOpacity
-          onPress={() => toggleLanguage("en")}
-          className="flex-row justify-between items-center p-4 border-b border-border"
-        >
-          <View className="flex-row items-center">
-            <Ionicons name="language" size={20} color={COLORS.light.primary} />
-            <TransText className="text-foreground ml-3" title="settings.selectLanguage"/>
-          </View>
-          {/* <Ionicons name="chevron-forward" size={20} color={COLORS.light.primary} /> */}
-          <TransText className="text-foreground" title={`languages.${i18n.language}`}/>
-        </TouchableOpacity>
-
-        <TouchableOpacity className="flex-row justify-between items-center p-4 border-b border-border">
-          <View className="flex-row items-center">
+        <TouchableOpacity className="p-4 pr-6 border-b border-border">
+          <LRView className="justify-between w-full items-center">
             <Ionicons
               name="notifications-outline"
               size={20}
               color={COLORS.light.primary}
             />
-            <Text className="text-foreground ml-3">Notifications</Text>
-          </View>
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color={COLORS.light.primary}
-          />
+            <TransText
+              title="settings.notifications"
+              className="text-foreground ml-3"
+            />
+          </LRView>
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row justify-between items-center p-4">
-          <View className="flex-row items-center">
+        <TouchableOpacity className="p-4 pr-6">
+          <LRView className="justify-between w-full items-center">
             <Ionicons
               name="help-circle-outline"
               size={20}
               color={COLORS.light.primary}
             />
-            <Text className="text-foreground ml-3">Help & Support</Text>
-          </View>
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color={COLORS.light.primary}
-          />
+            <TransText title="settings.help" className="text-foreground ml-3" />
+          </LRView>
         </TouchableOpacity>
       </View>
 
@@ -119,7 +78,7 @@ export default function Settings({ signOut }: { signOut: () => void }) {
         onPress={signOut}
         className="bg-red-500/20 p-4 rounded-lg mt-6 items-center"
       >
-        <Text className="text-red-500 font-medium">Sign Out</Text>
+        <TransText title="signOut" className="text-red-500 font-medium" />
       </TouchableOpacity>
     </View>
   );

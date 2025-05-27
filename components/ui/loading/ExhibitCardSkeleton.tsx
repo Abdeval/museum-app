@@ -28,23 +28,23 @@ export default function SkeletonExhibitCard({ type = "default" }: SkeletonExhibi
   })
 
   return (
-    <View className="bg-white rounded-lg overflow-hidden shadow-md mr-4 w-[250px]">
+    <View className="bg-white dark:bg-black rounded-lg overflow-hidden shadow-md mr-4 w-[250px]">
       {/* Image placeholder */}
-      <Animated.View style={animatedStyle} className="w-full h-[150px] bg-gray-300" />
+      <Animated.View style={animatedStyle} className="w-full h-[150px] bg-gray-300 dark:bg-background" />
 
       <View className="p-3">
         {/* Title placeholder */}
-        <Animated.View style={animatedStyle} className="h-5 bg-gray-300 rounded-md w-3/4 mb-2" />
+        <Animated.View style={animatedStyle} className="h-5 bg-gray-300 dark:bg-background rounded-md w-3/4 mb-2" />
 
         {/* Category and year placeholder */}
-        <Animated.View style={animatedStyle} className="h-3 bg-gray-300 rounded-md w-1/2 mb-3" />
+        <Animated.View style={animatedStyle} className="h-3 bg-gray-300 dark:bg-background rounded-md w-1/2 mb-3" />
 
         {/* Description placeholder - two lines */}
-        <Animated.View style={animatedStyle} className="h-4 bg-gray-300 rounded-md w-full mb-2" />
-        <Animated.View style={animatedStyle} className="h-4 bg-gray-300 rounded-md w-4/5" />
+        <Animated.View style={animatedStyle} className="h-4 bg-gray-300 dark:bg-background rounded-md w-full mb-2" />
+        <Animated.View style={animatedStyle} className="h-4 bg-gray-300 dark:bg-background rounded-md w-4/5" />
 
         {/* View Details button for fav type */}
-        {type === "fav" && <Animated.View style={animatedStyle} className="h-8 bg-gray-300 rounded-lg w-28 mt-3" />}
+        {type === "fav" && <Animated.View style={animatedStyle} className="h-8 bg-gray-400 rounded-lg w-28 mt-3" />}
       </View>
     </View>
   )

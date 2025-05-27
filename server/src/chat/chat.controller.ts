@@ -1,6 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { CreateChatDto, CreateMessageDto } from './chat.dto';
+import {
+  CheckExistingChatDto,
+  CreateChatDto,
+  CreateMessageDto,
+} from './chat.dto';
 
 @Controller('chats')
 export class ChatController {
@@ -56,5 +60,10 @@ export class ChatController {
   @Get('history/:userId')
   getHistory(@Param('userId') id: number) {
     return this.chatService.getHistory(id);
+  }
+
+  @Post('history/existingChat')
+  checkExistingChat(@Body() dto: CheckExistingChatDto) {
+    return this.chatService.checkExistingChat(dto);
   }
 }

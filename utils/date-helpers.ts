@@ -1,18 +1,19 @@
+
 // Helper function to format dates for chat history
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: string, t?: any): string => {
   const date = new Date(dateString)
   const now = new Date()
 
   // Check if it's today
   if (date.toDateString() === now.toDateString()) {
-    return `Today at ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+    return `${t("date.today")} ${t("date.at")} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
   }
 
   // Check if it's yesterday
   const yesterday = new Date(now)
   yesterday.setDate(now.getDate() - 1)
   if (date.toDateString() === yesterday.toDateString()) {
-    return `Yesterday at ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+    return `${t("date.yesterday")} ${t("date.at")} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
   }
 
   // If it's within the last 7 days

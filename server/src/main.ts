@@ -25,13 +25,17 @@ async function bootstrap() {
   // });
 
   app.enableCors({
-    origin: ['http://192.168.163.139:3000', 'http://localhost:3000'],
+    origin: [
+      'http://192.168.163.139:3000',
+      'http://localhost:3000',
+      'http://localhost:5173',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
 
   app.setGlobalPrefix('api');
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 void bootstrap();

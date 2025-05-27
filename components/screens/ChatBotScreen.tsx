@@ -1,10 +1,12 @@
 
-import { COLORS } from "@/constants/Colors"
 import { useAddMessage, useChatMessages } from "@/hooks/useChat"
+import { useExhibit } from "@/hooks/useExhibit"
+import { useColorScheme } from "@/lib/useColorScheme"
 import { handleSendMessage } from "@/utils/messages-helper"
 import { cleanupVoice, speakText, toggleRecording, voiceSetup } from "@/utils/voice-setup"
 import { useRouter } from "expo-router"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import {
   ActivityIndicator,
   FlatList,
@@ -15,6 +17,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  type ListRenderItem,
 } from "react-native"
 import Iconify from "react-native-iconify"
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated"
@@ -22,15 +25,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import RenderedMessage from "../ui/RenderedMessage"
 import StartNewChat from "../ui/StartNewChat"
 import GlobalLoading from "../ui/loading/GlobalLoading"
-import { useExhibit } from "@/hooks/useExhibit"
+import { COLORS } from "@/theme/colors"
+import LRView from "../ui/LRView"
+import { franc } from "franc"
+import type { MessageType } from "@/types"
 
 export default function ChatbotScreen({ userId }: { userId: number }) {
   const insets = useSafeAreaInsets()
   const router = useRouter()
+  const { t } = useTranslation()
+  const { colorScheme } = useColorScheme()
 
   // Enhanced hooks with better state management
   const { chatId, messages, isLoadingMessages, isLoadingCurrentChat } = useChatMessages(userId)
-
   const { addMessage, isAddingMessage } = useAddMessage()
   const { exhibits } = useExhibit({ search: false })
 
@@ -53,22 +60,77 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
     }
   })
 
-  // Send message handler
-  const sendMessage = (text = inputText, isVoice = false) => {
-    if (!chatId || !text.trim()) return
+  // Memoize callbacks to prevent unnecessary re-renders
+  const navigateToExhibit = useCallback(
+    (exhibitId: number) => {
+      router.push(`/exhibit/${exhibitId}`)
+    },
+    [router],
+  )
 
-    handleSendMessage({
-      text,
-      isVoiceInput: isVoice,
-      addMessage,
-      setInputText,
-      setIsLoading,
-      messages: messages || [],
-      exhibits: exhibits || [],
-      handleSpeakText,
-      chatId,
-    })
-  }
+  // Handle text-to-speech with language detection
+  const handleSpeakText = useCallback(
+    (text: string) => {
+      const detectedLang = franc(text)
+
+      let lang: "en" | "fr" | "ar" = "en"
+      if (detectedLang === "arq") {
+        lang = "ar"
+      } else if (detectedLang === "fra") {
+        lang = "fr"
+      } else if (detectedLang === "und") {
+        console.warn("Could not determine language, defaulting to 'en'")
+        lang = "en"
+      } else {
+        lang = "en"
+      }
+
+      speakText({
+        text,
+        setIsSpeaking,
+        isSpeaking,
+        lang,
+      })
+    },
+    [isSpeaking],
+  )
+
+  // Send message handler
+  const sendMessage = useCallback(
+    (text = inputText, isVoice = false) => {
+      if (!chatId || !text.trim()) return
+
+      handleSendMessage({
+        text,
+        isVoiceInput: isVoice,
+        addMessage,
+        setInputText,
+        setIsLoading,
+        messages: messages,
+        exhibits: exhibits,
+        handleSpeakText,
+        chatId,
+        t,
+      })
+    },
+    [chatId, inputText, addMessage, messages, exhibits, handleSpeakText, t],
+  )
+
+  // Memoize the renderItem function to prevent re-creation
+  const renderItem: ListRenderItem<MessageType> = useCallback(
+    ({ item }) => (
+      <RenderedMessage
+        isSpeaking={isSpeaking}
+        item={item}
+        navigateToExhibit={navigateToExhibit}
+        handleSpeakText={handleSpeakText}
+      />
+    ),
+    [isSpeaking, navigateToExhibit, handleSpeakText],
+  )
+
+  // Memoize the keyExtractor function
+  const keyExtractor = useCallback((item: MessageType) => item.id.toString(), [])
 
   // Initialize voice recognition
   useEffect(() => {
@@ -83,7 +145,7 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
       setIsRecording,
       stopPulseAnimation,
       setInputText,
-      handleSendMessage: sendMessage,
+      handleSendMessage: () => sendMessage(inputText, true),
     })
 
     // Cleanup
@@ -93,7 +155,7 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
         setIsSpeaking,
       })
     }
-  }, [chatId]) // Re-initialize when chat changes
+  }, [chatId, sendMessage, inputText, isSpeaking])
 
   // Scroll to bottom when new messages arrive or when keyboard appears
   useEffect(() => {
@@ -118,16 +180,16 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
   }, [messages])
 
   // Animation functions
-  const startPulseAnimation = () => {
+  const startPulseAnimation = useCallback(() => {
     pulseAnimation.value = withRepeat(withTiming(1.2, { duration: 1000 }), -1, true)
-  }
+  }, [pulseAnimation])
 
-  const stopPulseAnimation = () => {
+  const stopPulseAnimation = useCallback(() => {
     pulseAnimation.value = withTiming(1, { duration: 300 })
-  }
+  }, [pulseAnimation])
 
   // Toggle voice recording
-  const handleToggleRecording = () => {
+  const handleToggleRecording = useCallback(() => {
     toggleRecording({
       isRecording,
       setIsRecording,
@@ -135,30 +197,22 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
       stopPulseAnimation,
       startPulseAnimation,
     })
-  }
+  }, [isRecording, stopPulseAnimation, startPulseAnimation])
 
-  // Handle text-to-speech
-  const handleSpeakText = (text: string) => {
-    speakText({
-      text,
-      setIsSpeaking,
-      isSpeaking,
-    })
-  }
+  // Memoize loading state
+  const isInLoadingState = useMemo(
+    () => isLoadingMessages || isAddingMessage || isLoading,
+    [isLoadingMessages, isAddingMessage, isLoading],
+  )
 
-  // Navigate to exhibit details
-  const navigateToExhibit = (exhibitId: number) => {
-    router.push(`/exhibit/${exhibitId}`)
-  }
+  // Memoize placeholder text
+  const placeholderText = useMemo(() => t("chatbot.inputPlaceholder"), [t])
 
   // Show loading state while fetching chat data
-  if (isLoadingCurrentChat) return <GlobalLoading page="chat" />
+  if (isLoadingCurrentChat) return <GlobalLoading page="chatbot" />
 
   // Show start new chat screen if no chat exists
-  if (!chatId) return <StartNewChat userId={userId}/>
-
-  // Determine if we're in a loading state
-  const isInLoadingState = isLoadingMessages || isAddingMessage || isLoading
+  if (!chatId) return <StartNewChat userId={userId} />
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -171,19 +225,18 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
           {/* Space for header */}
           <View className="h-[100px]" />
 
-          {/* Messages list */}
+          {/* Messages list with optimizations */}
           <FlatList
             ref={flatListRef}
             data={messages || []}
-            renderItem={({ item }) => (
-              <RenderedMessage
-                isSpeaking={isSpeaking}
-                item={item}
-                navigateToExhibit={navigateToExhibit}
-                handleSpeakText={handleSpeakText}
-              />
-            )}
-            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            // Performance optimizations
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={10}
+            updateCellsBatchingPeriod={50}
+            initialNumToRender={10}
+            windowSize={10}
             contentContainerStyle={{
               paddingHorizontal: 16,
               paddingBottom: 16,
@@ -193,16 +246,16 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
             keyboardDismissMode="on-drag"
             onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
             onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
-            // ListEmptyComponent={() => (
-            //   <View className="flex-1 justify-center items-center mt-10">
-            //     <Iconify icon="mdi:chat-outline" size={40} color={COLORS.light.primary} />
-            //     <View className="mt-4 p-4 bg-secondary rounded-lg">
-            //       <Iconify icon="mdi:robot-outline" size={24} color={COLORS.light.primary} className="mb-2" />
-            //       <View className="h-4 w-20 bg-gray-300 rounded animate-pulse mb-2" />
-            //       <View className="h-4 w-40 bg-gray-300 rounded animate-pulse" />
-            //     </View>
-            //   </View>
-            // )}
+            ListEmptyComponent={() => (
+              <View className="flex-1 justify-center items-center mt-10 ">
+                <Iconify icon="mdi:chat-outline" size={40} color={COLORS.light.primary} />
+                <View className="mt-4 p-4 bg-secondary rounded-lg">
+                  <Iconify icon="mdi:robot-outline" size={24} color={COLORS.light.primary} className="mb-2" />
+                  <View className="h-4 w-20 bg-gray-400 dark:bg-gray-600 rounded animate-pulse mb-2 mt-2" />
+                  <View className="h-4 w-40 bg-gray-400 dark:bg-gray-600 rounded animate-pulse" />
+                </View>
+              </View>
+            )}
           />
 
           {/* Loading indicator */}
@@ -215,15 +268,18 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
           )}
 
           {/* Input area */}
-          <View className="sticky border-t border-border p-3 flex-row items-center bg-white dark:bg-background">
+          <LRView className="z-50 sticky gap-2 border-t border-border p-3 items-center bg-white dark:bg-black">
             <TextInput
-              className="flex-1 bg-primary/40 dark:bg-primary rounded-full px-4 py-2 mr-2 text-base"
-              placeholder="Ask about exhibits..."
+              className="flex-1 bg-primary/40 dark:bg-primary rounded-[14px] px-4 py-2 mr-2 text-base"
+              placeholder={placeholderText}
               value={inputText}
               onChangeText={setInputText}
+              placeholderTextColor={COLORS[colorScheme].foreground}
               multiline
+              autoCapitalize="none"
               maxLength={500}
               style={{ maxHeight: 100 }}
+              returnKeyType="send"
             />
 
             {/* Voice input button */}
@@ -231,7 +287,7 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
               <TouchableOpacity
                 onPress={handleToggleRecording}
                 disabled={isCheckingVoice || isInLoadingState}
-                className={`rounded-full p-2 mr-2 ${
+                className={`rounded-[14px] p-2 mr-2 ${
                   isRecording
                     ? "bg-red-500"
                     : isCheckingVoice
@@ -255,7 +311,7 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
             <TouchableOpacity
               onPress={() => sendMessage()}
               disabled={inputText.trim() === "" || isInLoadingState}
-              className={`rounded-full p-2 ${
+              className={`rounded-[14px] p-2 ${
                 inputText.trim() === "" || isInLoadingState ? "bg-gray-300" : "bg-primary"
               }`}
             >
@@ -265,7 +321,7 @@ export default function ChatbotScreen({ userId }: { userId: number }) {
                 color={inputText.trim() === "" || isInLoadingState ? "#999" : "white"}
               />
             </TouchableOpacity>
-          </View>
+          </LRView>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

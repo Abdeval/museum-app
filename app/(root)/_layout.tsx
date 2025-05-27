@@ -3,6 +3,7 @@ import { Redirect, Stack } from "expo-router";
 
 export default function AuthenticatedLayout() {
   const { user } = useSession();
+  
   if (!user) return <Redirect href={"/sign-in"} />;
 
   return (

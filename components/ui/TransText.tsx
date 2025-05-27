@@ -4,14 +4,16 @@ import { useTranslation } from 'react-i18next';
 
 interface TransTextProps extends TextProps {
     title: string;
+    number?: number;
+    page?: string
 }
 
 export default function TransText(props: TransTextProps) {
-    const { title, ...rest } = props;
+    const { page, number, title, ...rest } = props;
     const { t } = useTranslation();
   return (
     <Text {...rest}>
-       {t(title)}
+       {t(title, { number, page })}
     </Text>
   )
 }

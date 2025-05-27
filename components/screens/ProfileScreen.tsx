@@ -12,9 +12,6 @@ import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
-import { useColorScheme } from "nativewind";
-import { Icon } from "@roninoss/icons";
-import { COLORS } from "@/constants/Colors";
 import FavoritedExhibitsCards from "../ui/FavoritedExhibitsCards";
 import { avatarMap, BADGES } from "@/lib/data";
 import { useFavoritedExhibit } from "@/hooks/useExhibit";
@@ -26,6 +23,10 @@ import BadgesList from "../ui/BadgesList";
 import Settings from "../ui/Settings";
 import HistoryVisitsSkeleton from "../ui/loading/HistoryVisitsSkeleton";
 import EmptyHistoryVisits from "../ui/EmptyHistoryVisits";
+import TransText from "../ui/TransText";
+import { BlurView } from "expo-blur";
+import { useColorScheme } from "@/lib/useColorScheme";
+import { COLORS } from "@/theme/colors";
 
 const AnimatedImageBackground =
   Animated.createAnimatedComponent(ImageBackground);
@@ -65,6 +66,7 @@ export default function ProfileScreen({ signOut, userId }: ProfileProps) {
   const { data: favoriteExhibits, isLoading } = useFavoritedExhibit(
     Number(userId)
   );
+  const { colorScheme } = useColorScheme();
   const { data: visits, isLoading: isLoadingVisits } = useVisit(userId);
 
   // ! Handle profile image selection
@@ -121,9 +123,19 @@ export default function ProfileScreen({ signOut, userId }: ProfileProps) {
         className="bg-background/80 relative rounded-b-[34px] overflow-hidden
          shadow-md border border-t-0 border-border"
       >
-        <View className="w-full h-full bg-background opacity-30 absolute backdrop-blur-md" />
+        {/* adding a blurred view */}
+        <BlurView
+          intensity={60}
+          tint={colorScheme}
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            zIndex: 10,
+          }}
+        />
 
-        <View className="items-center p-2">
+        <View className="items-center p-2 z-50">
           <TouchableOpacity
             onPress={handleChangeProfileImage}
             className="relative"
@@ -131,16 +143,16 @@ export default function ProfileScreen({ signOut, userId }: ProfileProps) {
             {userInfo.avatar ? (
               <Image
                 source={avatarMap[userInfo.avatar]}
-                className="w-28 h-28 rounded-full border-4 border-white"
+                className="w-28 h-28 rounded-full border-4 border-border"
                 resizeMode="cover"
               />
             ) : (
-              <View className="w-28 h-28 rounded-full bg-gray-300 items-center justify-center border-4 border-white">
-                <Ionicons name="person" size={60} color="#6366f1" />
+              <View className="w-28 h-28 rounded-full bg-border items-center justify-center border-4 border-border">
+                <Ionicons name="person" size={60} color={COLORS[colorScheme].primary} />
               </View>
             )}
-            <View className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-md">
-              <Ionicons name="camera" size={18} color="#6366f1" />
+            <View className="absolute bottom-0 right-0 bg-border rounded-full p-2 shadow-md">
+              <Ionicons name="camera" size={18} color={COLORS[colorScheme].primary} />
             </View>
           </TouchableOpacity>
 
@@ -155,25 +167,24 @@ export default function ProfileScreen({ signOut, userId }: ProfileProps) {
           </View>
         </View>
 
-        <View className="flex-row justify-around mt-6 pb-6">
+        <View className="flex-row justify-around mt-6 pb-6 z-50">
           <View className="items-center">
             <Text className="text-foreground text-xl font-bold">
-              {/* here will be the number of the visits of the user */}
-              {profile.visitCount}
+              {visits?.length || 0}
             </Text>
-            <Text className="text-foreground/80">Visits</Text>
+            <TransText title="profile.visits" className="text-foreground/80" />
           </View>
           <View className="items-center">
             <Text className="text-foreground text-xl font-bold">
               {favoriteExhibits?.length || 0}
             </Text>
-            <Text className="text-foreground/80">Favorites</Text>
+            <TransText title="favorites.title" className="text-foreground/80" />
           </View>
           <View className="items-center">
             <Text className="text-foreground text-xl font-bold">
               {BADGES.length}
             </Text>
-            <Text className="text-foreground/80">Badges</Text>
+            <TransText title="profile.badges" className="text-foreground/80" />
           </View>
         </View>
       </AnimatedImageBackground>
@@ -184,31 +195,28 @@ export default function ProfileScreen({ signOut, userId }: ProfileProps) {
           className={`flex-1 py-3 ${activeTab === "favorites" ? "border-b-2 border-primary" : ""}`}
           onPress={() => setActiveTab("favorites")}
         >
-          <Text
+          <TransText
+            title="favorites.title"
             className={`text-center ${activeTab === "favorites" ? "text-primary font-bold" : "text-foreground"}`}
-          >
-            Favorites
-          </Text>
+          />
         </TouchableOpacity>
         <TouchableOpacity
           className={`flex-1 py-3 ${activeTab === "history" ? "border-b-2 border-primary" : ""}`}
           onPress={() => setActiveTab("history")}
         >
-          <Text
+          <TransText
+            title="history.title"
             className={`text-center ${activeTab === "history" ? "text-primary font-bold" : "text-foreground"}`}
-          >
-            History
-          </Text>
+          />
         </TouchableOpacity>
         <TouchableOpacity
           className={`flex-1 py-3 ${activeTab === "badges" ? "border-b-2 border-primary" : ""}`}
           onPress={() => setActiveTab("badges")}
         >
-          <Text
+          <TransText
+            title="profile.badges"
             className={`text-center ${activeTab === "badges" ? "text-primary font-bold" : "text-foreground"}`}
-          >
-            Badges
-          </Text>
+          />
         </TouchableOpacity>
       </View>
 
@@ -255,7 +263,7 @@ export default function ProfileScreen({ signOut, userId }: ProfileProps) {
 
       {/* App Version */}
       <View className="items-center py-6">
-        <Text className="text-gray-500">AMUSE Museum App v1.0.0</Text>
+        <TransText title="version" className="text-gray-500" />
       </View>
     </ScrollView>
   );

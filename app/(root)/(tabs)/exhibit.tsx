@@ -10,7 +10,8 @@ export default function Exhibit() {
   });
 
   if (isLoadingExhibits || isLoadingExhibitsByCategories) return <GlobalLoading page="Search" />;
-  console.log("categories", exhibitsByCategories);
+  // console.log("categories", exhibitsByCategories);
+  
 
   return (
     <View className="flex-1 relative bg-background">

@@ -2,14 +2,70 @@
   "welcome": "Welcome to our app!",
   "appName": "AMUSE - Exhibit Guide",
   "description": "Explore exhibits and learn history through a smart guide.",
+  "signOut": "Sign Out",
+  "fix": {
+    "database": "Database Maintenance"
+  },
+
+  "signIn": {
+    "button": "Sign in",
+    "title": "Welcome back",
+    "description": "Sign in to continue you museum experience",
+    "forgetPassword": "Forget Password",
+    "continue": "or continue with",
+    "noAccount": "Don't have an account?"
+  },
+
+  "signUp": {
+    "button": "Sign up",
+    "title": "Create Account",
+    "description": "Join AMUSE to explore our exhibits and get personalized recommendations",
+    "continue": "or continue with",
+    "haveAccount": "Already have an account?",
+    "termsPolicy": "By signing up, you agree to our ",
+    "terms": "Terms of Service ",
+    "privacy": "and Privacy Policy"
+  },
+
+  "user": {
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Name (Optional)"
+  },
+
+  "inputs": {
+    "email": {
+      "placeHolder": "Enter your email"
+    },
+    "password": {
+      "placeHolder": "Create a password"
+    },
+    "name": {
+      "placeHolder": "Enter your name"
+    },
+    "confirmPassword": {
+      "placeHolder": "Confirm your password"
+    }
+  },
 
   "navigation": {
     "home": "Home",
     "exhibits": "Exhibits",
     "scanner": "QR Scanner",
     "chatbot": "Chatbot",
-    "settings": "Settings",
-    "language": "Language"
+    "profile": "Profile",
+    "history": "Chat History"
+  },
+
+  "categories": {
+    "art": "Art",
+    "history": "History",
+    "painting": "Painting",
+    "artifact": "Artifact",
+    "culture": "Culture",
+    "explore": "Explore by Category",
+    "all": "All"
   },
 
   "exhibit": {
@@ -17,21 +73,48 @@
     "description": "Description",
     "noExhibits": "No exhibits available at the moment.",
     "view3D": "View in 3D",
-    "recommended": "Recommended Exhibits"
+    "recommended": "Recommended Exhibits",
+    "about": "about this exhibit",
+    "askAbout": "Ask about this exhibit",
+    "clear": "Clear Filter",
+    "notFound": "No Exhibits Found",
+    "adjustFilter": "Try adjusting your search or filters to find what you are looking for"
   },
 
   "scanner": {
     "title": "Scan QR Code",
     "instructions": "Point your camera at a QR code to view exhibit details.",
-    "noCamera": "Camera access is not available."
+    "processing": "Processing...",
+    "noCamera": "Camera access is not available.",
+    "flash": {
+      "on": "On",
+      "off": "Off"
+    },
+    "camera": {
+      "title": "Camera Permission Required",
+      "message": "We need camera access to scan exhibit QR codes",
+      "button": "Grant Permission"
+    },
+    "scanAgain": "Scan Again"
   },
 
   "chatbot": {
     "title": "Museum Assistant",
     "inputPlaceholder": "Ask your question here...",
-    "loading": "Loading...",
+    "loading": "Loading {{page}}...",
     "noResponse": "Sorry, I couldn’t understand that. Please try again.",
-    "recommendations": "Exhibit Suggestions"
+    "recommendations": "Exhibit Suggestions",
+    "description": "Get personalized recommendations based on your interests",
+    "start": "Start a new chat",
+    "welcome": "Welcome to the Museum Guide",
+    "messages": "{{number}} messages",
+    "noMessages": "No messages yet",
+    "newChat": "New conversation",
+    "error": "I'm sorry, I'm having trouble connecting right now. Please check your API key or try again later."
+  },
+
+  "recommendation": {
+    "text": "Here are some exhibits you might enjoy:"
   },
 
   "settings": {
@@ -39,13 +122,67 @@
     "selectLanguage": "Select Language",
     "currentLanguage": "Current Language",
     "reset": "Reset",
-    "save": "Save Settings"
+    "save": "Save Settings",
+    "notifications": "Notifications",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "help": "Help & Support"
+  },
+
+  "search": {
+    "inputPlaceholder": "Ask your question here...",
+    "discover": "Discover Our Collection",
+    "description": "Explore {{number}} exhibits across different time periods and themes",
+    "browse": "Browse By",
+    "categories": {
+      "all": "All",
+      "chronologic": "Chronological",
+      "thematic": "Thematic"
+    },
+    "result": {
+      "allExhibits": "All Exhibits",
+      "searchResult": "Search Results"
+    },
+    "filterTab": "Time Periods"
   },
 
   "languages": {
     "ar": "Arabic",
     "en": "English",
     "fr": "French"
+  },
+
+  "favorites": {
+    "title": "Favorites",
+    "add": "Add to Favorites",
+    "remove": "Remove from Favorites",
+    "viewFavorites": "View Favorites",
+    "noFavorites": "No favorites added yet.",
+    "explore": "explore exhibits",
+    "viewDetail": "View Details"
+  },
+
+  "history": {
+    "title": "History",
+    "remove": "Remove from History",
+    "viewHistory": "View  Complete History",
+    "noHistory": "No history available.",
+    "start": "Start a new chat to begin exploring the museum",
+    "clearAll": "Clear all",
+    "details": "Details"
+  },
+
+  "profile": {
+    "visits": "Number of Visits",
+    "badges": "Badges",
+    "visited": "Visited"
+  },
+
+  "date": {
+    "today": "Today",
+    "previous": "Previous",
+    "yesterday": "Yesterday",
+    "at": "at"
   },
 
   "errors": {
@@ -59,5 +196,6 @@
     "yes": "Yes",
     "no": "No",
     "back": "Back"
-  }
+  },
+  "version": "AMUSE Museum App v1.0.0"
 }

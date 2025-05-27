@@ -13,7 +13,7 @@ export default function Profile() {
 
   return (
     <View className='bg-transparent flex-1'>
-       <CustomHeader type='home' content='my profile'/>
+       <CustomHeader type='home' content='profile'/>
        <ProfileScreen signOut={signOut} userId={user.id}/>
     </View>
   );

@@ -39,3 +39,9 @@ export class CreateFavoriteDto {
   @IsNotEmpty()
   exhibitId: number;
 }
+
+export class Model3DDto {
+  @IsInt()
+  @IsNotEmpty()
+  exhibitId: number;
+}

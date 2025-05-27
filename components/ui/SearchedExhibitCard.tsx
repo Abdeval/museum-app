@@ -7,20 +7,28 @@ import { Text } from "../nativewindui/Text";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { EXHIBIT_RATINGS } from "@/lib/data";
+import { useManageFavorites } from "@/hooks/useFavorite";
+import { useSession } from "@/context/AuthProvider";
 
 interface SearchedExhibitCardProps {
   item: ExhibitType;
+  // userId: number;
 }
 
 export default function SearchedExhibitCard({
   item,
+  // userId,
 }: SearchedExhibitCardProps) {
+  const { handleFavoriteChange } = useManageFavorites();
+  const { user } = useSession();
   const router = useRouter();
+  // ! fake rating
   const rating = EXHIBIT_RATINGS[item.id] || { rating: 4.0, reviews: 0 };
 
   const navigateToExhibit = (exhibitId: number) => {
     router.push(`/exhibit/${exhibitId}`);
   };
+
   return (
     <Animated.View
       key={item.id}
@@ -40,13 +48,24 @@ export default function SearchedExhibitCard({
             resizeMode="cover"
           />
           <View className="absolute top-2 right-2">
-            <FavoriteButton exhibitId={item.id} />
+            <FavoriteButton
+              onToggle={(isFavorite: boolean) =>
+                handleFavoriteChange({
+                  exhibitId: item.id,
+                  userId: Number(user?.id),
+                  isFavorite,
+                })
+              }
+              exhibitId={item.id}
+            />
           </View>
           <View className="absolute bottom-0 left-0 right-0 bg-black/20 px-3 py-2">
-            <Text className="text-white font-bold">{item.title}</Text>
+            <Text className="text-primary-foreground font-bold">
+              {item.title}
+            </Text>
             <View className="flex-row items-center mt-1">
               <Ionicons name="star" size={14} color="#FFD700" />
-              <Text className="text-white ml-1">
+              <Text className="text-primary-foreground ml-1">
                 {rating.rating.toFixed(1)} ({rating.reviews})
               </Text>
             </View>

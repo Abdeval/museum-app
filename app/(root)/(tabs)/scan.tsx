@@ -1,13 +1,19 @@
+
 import CustomHeader from "@/components/ui/CustomHeader"
 import Overlay from "@/components/ui/Overlay"
 import { Ionicons } from "@expo/vector-icons"
 import { useCameraPermissions } from "expo-camera"
 import { useEffect, useRef, useState, useCallback } from "react"
-import { ActivityIndicator, AppState, Linking, Text, TouchableOpacity, View } from "react-native"
+import { AppState, Alert, TouchableOpacity, View } from "react-native"
 import { useFocusEffect } from "@react-navigation/native"
+import { useRouter } from "expo-router"
 import CameraManager from "@/components/ui/CameraManager"
 import GlobalLoading from "@/components/ui/loading/GlobalLoading"
 import { COLORS } from "@/constants/Colors"
+import TransText from "@/components/ui/TransText"
+// import { useExhibit } from "@/hooks/useExhibit"
+import { vibrate } from "@/utils/haptics"
+import { getExhibitById } from "@/hooks/useExhibit"
 
 export default function Scan() {
   const [permission, requestPermission] = useCameraPermissions()
@@ -15,6 +21,10 @@ export default function Scan() {
   const [flashOn, setFlashOn] = useState(false)
   const [isScreenFocused, setIsScreenFocused] = useState(true)
   const [cameraReady, setCameraReady] = useState(false)
+  const [scanResult, setScanResult] = useState<string | null>(null)
+
+  const router = useRouter()
+  // const { getExhibitById } = useExhibit({ search: false })
 
   const qrLock = useRef(false)
   const appState = useRef(AppState.currentState)
@@ -31,6 +41,7 @@ export default function Scan() {
       if (isMounted) {
         qrLock.current = false
         setIsScanning(true)
+        setScanResult(null)
       }
     }
 
@@ -52,22 +63,81 @@ export default function Scan() {
     }
   }, [permission, requestPermission])
 
-  const handleBarCodeScanned = ({ data }:{ data: any }) => {
+  // Function to parse exhibit QR codes
+  const parseExhibitQR = (data: string): { isExhibit: boolean; exhibitId?: number } => {
+    try {
+      // Check if it's a URL with our exhibit format
+      if (data.includes("exhibit=")) {
+        // Extract exhibit ID from URL parameter
+        const match = data.match(/exhibit=(\d+)/)
+        if (match && match[1]) {
+          return { isExhibit: true, exhibitId: Number.parseInt(match[1], 10) }
+        }
+      }
+
+      // Check if it's a direct exhibit ID format (e.g., "EXHIBIT:123")
+      if (data.startsWith("EXHIBIT:")) {
+        const id = Number.parseInt(data.split(":")[1], 10)
+        if (!isNaN(id)) {
+          return { isExhibit: true, exhibitId: id }
+        }
+      }
+
+      // Check if it's just a number (simple exhibit ID)
+      const numericId = Number.parseInt(data, 10)
+      if (!isNaN(numericId) && data.trim() === numericId.toString()) {
+        return { isExhibit: true, exhibitId: numericId }
+      }
+
+      // Not an exhibit QR code
+      return { isExhibit: false }
+    } catch (error) {
+      console.error("Error parsing QR code:", error)
+      return { isExhibit: false }
+    }
+  }
+
+  const handleBarCodeScanned = async ({ data }: { data: string }) => {
     if (data && !qrLock.current) {
       qrLock.current = true
       setIsScanning(false)
+      setScanResult(data)
 
-      // Visual feedback before opening URL
-      setTimeout(async () => {
-        try {
-          await Linking.openURL(data)
-        } catch (error) {
-          console.error("Could not open URL:", error)
-          // Reset lock if URL couldn't be opened
-          qrLock.current = false
-          setIsScanning(true)
+      // Provide haptic feedback
+      vibrate()
+
+      // Parse the QR code
+      const { isExhibit, exhibitId } = parseExhibitQR(data)
+
+      if (isExhibit && exhibitId) {
+        // Check if the exhibit exists in our database
+        const exhibit = await getExhibitById(exhibitId)
+        console.log("exhibit: ", exhibit);
+        if (exhibit) {
+          // Navigate to the exhibit detail page after a short delay
+          setTimeout(() => {
+            router.push(`/exhibit/${exhibitId}`)
+          }, 800)
+        } else {
+          // Exhibit not found
+          setTimeout(() => {
+            Alert.alert(
+              "Exhibit Not Found",
+              "The scanned exhibit could not be found. Please try scanning a different QR code.",
+              [{ text: "OK", onPress: resetScanner }],
+            )
+          }, 500)
         }
-      }, 800)
+      } else {
+        // Not an exhibit QR code
+        setTimeout(() => {
+          Alert.alert(
+            "Invalid QR Code",
+            "This QR code is not associated with any exhibit. Please scan an exhibit QR code.",
+            [{ text: "OK", onPress: resetScanner }],
+          )
+        }, 500)
+      }
     }
   }
 
@@ -78,6 +148,7 @@ export default function Scan() {
   const resetScanner = () => {
     qrLock.current = false
     setIsScanning(true)
+    setScanResult(null)
   }
 
   useFocusEffect(
@@ -90,6 +161,7 @@ export default function Scan() {
         setTimeout(() => {
           qrLock.current = false
           setIsScanning(true)
+          setScanResult(null)
           setCameraReady(true)
         }, 300)
       }
@@ -103,20 +175,17 @@ export default function Scan() {
       }
     }, []),
   )
-  
-  // ! requesting the camera permission
-  if (!permission) return <GlobalLoading page="Camera"/>
 
+  // Requesting the camera permission
+  if (!permission) return <GlobalLoading page="Camera" />
 
   if (!permission.granted) {
     return (
       <View className="flex-1 bg-background items-center justify-center">
-        <Text className="text-white text-xl font-bold">Camera Permission Required</Text>
-        <Text className="text-white text-base text-center mt-5 px-8">
-          We need camera access to scan exhibit QR codes
-        </Text>
+        <TransText title="scanner.camera.title" className="text-foreground text-xl font-bold" />
+        <TransText title="scanner.camera.message" className="text-foreground text-base text-center mt-5 px-8" />
         <TouchableOpacity className="bg-primary px-8 py-4 rounded-lg mt-5" onPress={requestPermission}>
-          <Text className="text-white text-base font-bold">Grant Permission</Text>
+          <TransText title="scanner.camera.button" className="text-foreground text-base font-bold" />
         </TouchableOpacity>
       </View>
     )
@@ -124,7 +193,7 @@ export default function Scan() {
 
   return (
     <View className="flex-1 bg-background">
-      <CustomHeader type="scan" content="Scan exhibit" />
+      <CustomHeader type="scan" content="scanner" />
 
       <View className="flex-1 relative">
         <CameraManager
@@ -134,26 +203,32 @@ export default function Scan() {
           onBarcodeScanned={handleBarCodeScanned}
         />
 
-        <Overlay isScanning={isScanning} />
+        <Overlay isScanning={isScanning} scanResult={scanResult} />
 
         <View className="absolute bottom-24 left-0 right-0 items-center">
-          <Text className="text-white text-base bg-white/30 px-5 py-2.5 rounded-full overflow-hidden">
-            Position the QR code within the frame to scan
-          </Text>
+          <TransText
+            title={isScanning ? "scanner.instructions" : "scanner.processing"}
+            className="text-white text-base bg-white/30 px-5 py-2.5 rounded-full overflow-hidden"
+          />
         </View>
       </View>
 
-      <View className="flex-row justify-around items-center py-5 ">
+      <View className="flex-row justify-around items-center py-5">
         <TouchableOpacity className="items-center p-2.5" onPress={toggleFlash} activeOpacity={0.7}>
-          <Ionicons name={flashOn ? "flash" : "flash-off"} size={24} color={flashOn ? COLORS.light.primary : COLORS.light.icon} />
-          <Text className={`mt-1 text-xs ${flashOn ? "text-primary" : "text-foreground"}`}>
-            {flashOn ? "Flash On" : "Flash Off"}
-          </Text>
+          <Ionicons
+            name={flashOn ? "flash" : "flash-off"}
+            size={24}
+            color={flashOn ? COLORS.light.primary : COLORS.light.icon}
+          />
+          <TransText
+            title={`scanner.flash.${flashOn ? "on" : "off"}`}
+            className={`mt-1 text-xs ${flashOn ? "text-primary" : "text-foreground"}`}
+          />
         </TouchableOpacity>
 
         {!isScanning && (
           <TouchableOpacity className="bg-primary px-8 py-3 rounded-full" onPress={resetScanner} activeOpacity={0.7}>
-            <Text className="text-white text-base font-bold">Scan Again</Text>
+            <TransText title="scanner.scanAgain" className="text-foreground text-base font-bold" />
           </TouchableOpacity>
         )}
       </View>

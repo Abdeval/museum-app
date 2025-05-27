@@ -2,14 +2,70 @@
   "welcome": "Bienvenue dans notre application !",
   "appName": "AMUSE - Guide d'exposition",
   "description": "Explorez les expositions et découvrez l'histoire avec un guide intelligent.",
+  "signOut": "Se déconnecter",
+  "fix": {
+    "database": "Maintenance de la base de données"
+  },
+
+  "signIn": {
+    "button": "Se connecter",
+    "title": "Bon retour",
+    "description": "Connectez-vous pour poursuivre votre expérience au musée",
+    "forgetPassword": "Mot de passe oublié",
+    "continue": "ou continuer avec",
+    "noAccount": "Vous n'avez pas de compte ?"
+  },
+
+  "signUp": {
+    "button": "S'inscrire",
+    "title": "Créer un compte",
+    "description": "Rejoignez AMUSE pour explorer nos expositions et recevoir des recommandations personnalisées",
+    "continue": "ou continuer avec",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "termsPolicy": "En vous inscrivant, vous acceptez nos ",
+    "terms": "Conditions d'utilisation ",
+    "privacy": "et Politique de confidentialité"
+  },
+
+  "user": {
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmez le mot de passe",
+    "name": "Nom (facultatif)"
+  },
+
+  "inputs": {
+    "email": {
+      "placeHolder": "Entrez votre email"
+    },
+    "password": {
+      "placeHolder": "Créez un mot de passe"
+    },
+    "name": {
+      "placeHolder": "Entrez votre nom"
+    },
+    "confirmPassword": {
+      "placeHolder": "Confirmez votre mot de passe"
+    }
+  },
 
   "navigation": {
     "home": "Accueil",
     "exhibits": "Expositions",
     "scanner": "Scanner QR",
     "chatbot": "Assistant",
-    "settings": "Paramètres",
-    "language": "Langue"
+    "profile": "profile",
+    "history": "historique de chat"
+  },
+
+  "categories": {
+    "art": "Art",
+    "history": "Histoire",
+    "painting": "paintures",
+    "artifact": "Artifact",
+    "culture": "Culture",
+    "explore": "Explorer par catégorie",
+    "all": "Tout"
   },
 
   "exhibit": {
@@ -17,21 +73,48 @@
     "description": "Description",
     "noExhibits": "Aucune exposition disponible pour le moment.",
     "view3D": "Voir en 3D",
-    "recommended": "Expositions recommandées"
+    "recommended": "Expositions recommandées",
+    "about": "sur cette exposition",
+    "askAbout": "questions sur cette exposition",
+    "clear": "reseter le filtre",
+    "notFound": "aucune exposition trouvée",
+    "adjustFilter": "Essayez d’ajuster votre recherche ou vos filtres pour trouver ce que vous cherchez"
   },
 
   "scanner": {
     "title": "Scanner un code QR",
     "instructions": "Pointez votre caméra vers un code QR pour voir les détails de l'exposition.",
-    "noCamera": "Accès à la caméra non disponible."
+    "processing": "traitement...",
+    "noCamera": "Accès à la caméra non disponible.",
+    "flash": {
+      "on": "On",
+      "off": "Off"
+    },
+    "camera": {
+      "title": "Autorisation de la caméra requise",
+      "message": "Nous avons besoin d'accéder à la caméra pour scanner les codes QR des expositions",
+      "button": "Autoriser l'accès"
+    },
+    "scanAgain": "Scanner une autre fois"
   },
 
   "chatbot": {
     "title": "Assistant du musée",
     "inputPlaceholder": "Posez votre question ici...",
-    "loading": "Chargement...",
+    "loading": "Chargement {{page}}...",
     "noResponse": "Désolé, je n'ai pas compris. Veuillez réessayer.",
-    "recommendations": "Suggestions d'exposition"
+    "recommendations": "Suggestions d'exposition",
+    "description": "Obtenez des recommandations personnalisées basées sur vos intérêts",
+    "start": "Démarrer un nouveau chat",
+    "welcome": "Bienvenue dans le guide du musée",
+    "messages": "{{number}} messages",
+    "noMessages": "Pas de messages",
+    "newChat": "Nouvelle conversation",
+    "error": "Désolé, je rencontre des difficultés pour me connecter en ce moment. Veuillez vérifier votre clé API ou réessayer plus tard."
+  },
+
+  "recommendation": {
+    "text": "Voici quelques expositions qui pourraient vous plaire :"
   },
 
   "settings": {
@@ -39,13 +122,67 @@
     "selectLanguage": "Choisir la langue",
     "currentLanguage": "Langue actuelle",
     "reset": "Réinitialiser",
-    "save": "Enregistrer les paramètres"
+    "save": "Enregistrer les paramètres",
+    "notifications": "Notifications",
+    "darkMode": "Mode sombre",
+    "lightMode": "Mode clair",
+    "help": "Aide et support"
+  },
+
+  "search": {
+    "inputPlaceholder": "Posez votre question ici...",
+    "discover": "Découvrez notre collection",
+    "description": "Explorez {{number}} expositions à travers différentes périodes et thématiques",
+    "browse": "Parcourir par",
+    "categories": {
+      "all": "Tout",
+      "chronologic": "Chronologique",
+      "thematic": "Thématique"
+    },
+    "result": {
+      "allExhibits": "Toutes les expositions",
+      "searchResult": "Résultats de recherche"
+    },
+    "filterTab": "périodes de temps"
   },
 
   "languages": {
     "ar": "Arabe",
     "en": "Anglais",
     "fr": "Français"
+  },
+
+  "favorites": {
+    "title": "Favoris",
+    "add": "Ajouter aux favoris",
+    "remove": "Retirer des favoris",
+    "noFavorites": "Aucun favori enregistré.",
+    "viewFavorites": "Voir les favoris",
+    "explore": "Explorer les expositions",
+    "viewDetail": "afficher les détails"
+  },
+
+  "history": {
+    "title": "Historique",
+    "noHistory": "Aucun historique disponible.",
+    "viewHistory": "Voir l'historique complet",
+    "remove": "Retirer d'historique",
+    "start": "Démarrer un nouveau chat pour commencer à explorer le musée",
+    "clearAll": "supprimer tous",
+    "details": "Details"
+  },
+
+  "date": {
+    "today": "Aujourd'hui",
+    "previous": "Précédent",
+    "yesterday": "Hier",
+    "at": "á"
+  },
+
+  "profile": {
+    "visits": "Nombre de visites",
+    "badges": "Badges",
+    "visited": "visité"
   },
 
   "errors": {
@@ -59,5 +196,6 @@
     "yes": "Oui",
     "no": "Non",
     "back": "Retour"
-  }
+  },
+  "version": "AMUSE Application du musée v1.0.0"
 }

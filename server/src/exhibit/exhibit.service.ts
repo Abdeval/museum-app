@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateExhibitDto, CreateFavoriteDto } from './exhibit.dto';
+import { CreateExhibitDto, CreateFavoriteDto, Model3DDto } from './exhibit.dto';
 
 @Injectable()
 export class ExhibitService {
@@ -19,28 +19,48 @@ export class ExhibitService {
       const model = files?.model?.map(
         (i) => `/uploads/models/${i.filename}`,
       )[0];
-      const res = await this.prisma.exhibit.create({
-        data: {
-          title: dto.title,
-          description: dto.description,
-          thematic_category: dto.thematic_category,
-          chronological_category: dto.chronological_category,
-          year: dto.year,
-          images: {
-            create: images?.map((i) => ({ url: i })),
+      if (model) {
+        const res = await this.prisma.exhibit.create({
+          data: {
+            title: dto.title,
+            description: dto.description,
+            thematic_category: dto.thematic_category,
+            chronological_category: dto.chronological_category,
+            year: dto.year,
+            images: {
+              create: images?.map((i) => ({ url: i })),
+            },
+            model3D: {
+              create: { fileUrl: model ? model : '' },
+            },
           },
-          model3D: {
-            create: { fileUrl: model ? model : '' },
+          include: {
+            images: true,
+            model3D: true,
           },
-        },
-        include: {
-          images: true,
-          model3D: true,
-        },
-      });
-
-      console.log(res);
-      return res;
+        });
+        // console.log(res);
+        return res;
+      } else {
+        const res = await this.prisma.exhibit.create({
+          data: {
+            title: dto.title,
+            description: dto.description,
+            thematic_category: dto.thematic_category,
+            chronological_category: dto.chronological_category,
+            year: dto.year,
+            images: {
+              create: images?.map((i) => ({ url: i })),
+            },
+          },
+          include: {
+            images: true,
+            // model3D: true,
+          },
+        });
+        // console.log(res);
+        return res;
+      }
     } catch (err: any) {
       console.error(err);
       throw err;
@@ -65,6 +85,17 @@ export class ExhibitService {
       console.log(err);
       throw err;
     }
+  }
+
+  // ! delete
+  async deleteExhibit(id: number) {
+    const res = await this.prisma.exhibit.delete({
+      where: {
+        id,
+      },
+    });
+
+    return res;
   }
 
   // ! get all exhibits
@@ -123,6 +154,31 @@ export class ExhibitService {
     }
   }
 
+  // ! create a 3 model
+  async create3DModel(dto: Model3DDto, file: Express.Multer.File) {
+    const fileUrl = `/uploads/models/${file.filename}`;
+    console.log('creating the model:', fileUrl);
+    const res = await this.prisma.model3D.create({
+      data: {
+        fileUrl,
+        exhibitId: Number(dto.exhibitId),
+      },
+    });
+    return res;
+    // return Promise.resolve();
+  }
+
+  // ! get 3D model by exhibit id
+  async get3DModel(exhibitId: number) {
+    const res = await this.prisma.model3D.findUnique({
+      where: {
+        exhibitId,
+      },
+    });
+
+    return res;
+  }
+
   // ? favorites
   // todo: add to favorites
   async addToFavorites(dto: CreateFavoriteDto) {
@@ -167,7 +223,22 @@ export class ExhibitService {
       },
     });
 
-    console.log('favorites:', res);
+    // console.log('favorites:', res);
+
+    return res;
+  }
+
+  // ! get all favorites for admin usage
+  async getAllFavoritedExhibits() {
+    const res = await this.prisma.favorite.findMany({
+      include: {
+        exhibit: {
+          include: {
+            images: true,
+          },
+        },
+      },
+    });
 
     return res;
   }

@@ -44,11 +44,10 @@ export default function Slider({ museumImages }: SliderProps) {
   return (
     <View>
       <Animated.FlatList
-        className=""
         data={museumImages}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item, index }) => (
-          <SliderItem item={item} index={index} scrollX={scrollX} />
+          <SliderItem item={item} index={index || 0} scrollX={scrollX} />
         )}
         horizontal
         showsHorizontalScrollIndicator={false}

@@ -1,7 +1,7 @@
 import CustomHeader from "@/components/ui/CustomHeader";
 
 import { COLORS } from "@/constants/Colors";
-import { categories, EXHIBIT_RATINGS, MUSEUM_EXHIBITS } from "@/lib/data";
+import { categories, EXHIBIT_RATINGS } from "@/lib/data";
 import { ThematicCategories } from "@/server/generated/prisma";
 import { CategoryGroupType, ExhibitType } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,6 +17,11 @@ import {
 } from "react-native";
 import SearchedExhibitCard from "../ui/SearchedExhibitCard";
 import FilteredTab from "../ui/FilteredTab";
+import { useTranslation } from "react-i18next";
+import LRView from "../ui/LRView";
+import TransText from "../ui/TransText";
+import { useSession } from "@/context/AuthProvider";
+import MaintenanceScreen from "./MaintenanceScreen";
 
 // ! Filter types
 type FilterType = "all" | "chronological" | "thematic";
@@ -32,11 +37,15 @@ export default function SearchExhibitsScreen({
   thematicCategories,
   chronologicalCategories,
 }: SearchExhibitsScreenProps) {
+  const { user } = useSession();
+
+  // ! initializing the state
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [activeCategory, setActiveCategory] = useState<
     ThematicCategories | "all"
   >("all");
+  const { t, i18n } = useTranslation();
 
   const [filteredExhibits, setFilteredExhibits] =
     useState<ExhibitType[]>(exhibits);
@@ -85,10 +94,13 @@ export default function SearchExhibitsScreen({
 
         // ! Apply category filter
         if (category !== "all") {
-          results = results.filter(
-            (exhibit) => exhibit.thematic_category === category
-          );
+          results = results.filter((exhibit) => {
+            // console.log(exhibit.thematic_category ,category);
+            return exhibit.thematic_category === category;
+          });
         }
+
+        // console.log("result: ", results);
 
         // Apply chronological/thematic filter
         if (filter === "chronological") {
@@ -121,21 +133,23 @@ export default function SearchExhibitsScreen({
     debouncedSearch(searchQuery, activeFilter, activeCategory);
   }, [searchQuery, activeFilter, activeCategory, debouncedSearch]);
 
+  if (!user) return <MaintenanceScreen />;
+
   return (
     <View className="flex-1 bg-background relative">
       {/* custom header */}
-      <CustomHeader type="exhibit" content="Search Exhibits" />
+      <CustomHeader type="exhibit" content="exhibits" />
 
       <ScrollView className="flex-1">
         <View className="h-[100px]" />
         <View className="px-4 pt-4 pb-20">
           {/* Search Bar */}
           <View className="bg-white dark:bg-black rounded-lg shadow-sm mb-4">
-            <View className="flex-row items-center px-3 py-2">
+            <LRView className="items-center px-3 py-2 gap-2">
               <Ionicons name="search" size={20} color="#6366f1" />
               <TextInput
                 className="flex-1 ml-2 text-foreground"
-                placeholder="Search exhibits, artists, categories..."
+                placeholder={t("search.inputPlaceholder")}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 placeholderTextColor={COLORS.light.primary}
@@ -145,137 +159,138 @@ export default function SearchExhibitsScreen({
                   <Ionicons name="close-circle" size={20} color="#999" />
                 </TouchableOpacity>
               ) : null}
-            </View>
+            </LRView>
           </View>
 
           {/* Background Image */}
           <View className="relative rounded-lg overflow-hidden mb-6">
             <Image
-              source={{
-                uri: "https://images.unsplash.com/photo-1566140967404-b8b3932483f5?q=80&w=2070",
-              }}
+              source={require("@/assets/images/searching.jpg")}
               className="w-full h-[150px]"
               resizeMode="cover"
             />
             <View className="absolute inset-0 bg-black/40 justify-center px-4">
-              <Text className="text-white text-xl font-bold mb-2">
-                Discover Our Collection
-              </Text>
-              <Text className="text-white/90">
-                Explore {MUSEUM_EXHIBITS.length} exhibits across different time
-                periods and themes
-              </Text>
+              <LRView>
+                <TransText
+                  title="search.discover"
+                  className="text-primary-foreground text-xl font-bold mb-2"
+                />
+              </LRView>
+              <LRView>
+                <TransText
+                  title="search.description"
+                  number={exhibits?.length || 0}
+                  className="text-primary-foreground"
+                />
+              </LRView>
             </View>
           </View>
 
           {/* Filter Tabs */}
           <View className="mb-6">
-            <Text className="text-foreground text-lg font-semibold mb-3">
-              Browse By
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mb-4"
-            >
+            <LRView className="pr-4">
+              <TransText
+                title="search.browse"
+                className="text-foreground text-xl font-semibold mb-3"
+              />
+            </LRView>
+
+            <LRView className="mb-4">
               <TouchableOpacity
                 onPress={() => setActiveFilter("all")}
                 className={`px-4 py-2 rounded-full mr-2 ${activeFilter === "all" ? "bg-primary" : "bg-white dark:bg-black"}`}
               >
-                <Text
+                <TransText
+                  title="search.categories.all"
                   className={
                     activeFilter === "all"
                       ? "text-white font-medium"
                       : "text-foreground"
                   }
-                >
-                  All
-                </Text>
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setActiveFilter("chronological")}
                 className={`px-4 py-2 rounded-full mr-2 ${
-                  activeFilter === "chronological" ? "bg-primary" : "bg-white dark:bg-black"
+                  activeFilter === "chronological"
+                    ? "bg-primary"
+                    : "bg-white dark:bg-black"
                 }`}
               >
-                <Text
+                <TransText
+                  title="search.categories.chronologic"
                   className={
                     activeFilter === "chronological"
                       ? "text-white font-medium"
                       : "text-foreground"
                   }
-                >
-                  Chronological
-                </Text>
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setActiveFilter("thematic")}
                 className={`px-4 py-2 rounded-full mr-2 ${activeFilter === "thematic" ? "bg-primary" : "bg-white dark:bg-black"}`}
               >
-                <Text
+                <TransText
+                  title="search.categories.thematic"
                   className={
                     activeFilter === "thematic"
                       ? "text-white font-medium"
                       : "text-foreground"
                   }
-                >
-                  Thematic
-                </Text>
+                />
               </TouchableOpacity>
-            </ScrollView>
+            </LRView>
 
             {/* Categories */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <TouchableOpacity
-                onPress={() => setActiveCategory("all")}
-                className={`px-4 py-2 rounded-full mr-2 ${
-                  activeCategory === "all"
-                    ? "bg-primary/10 border border-primary"
-                    : "bg-white"
-                }`}
-              >
-                <Text
-                  className={
-                    activeCategory === "all"
-                      ? "text-primary font-medium"
-                      : "text-foreground"
-                  }
-                >
-                  All
-                </Text>
-              </TouchableOpacity>
-              {categories.map((category) => (
+              <LRView>
                 <TouchableOpacity
-                  key={category.name}
-                  onPress={() => {
-                    console.log("category and active", category.name);
-                    setActiveCategory(
-                      category.name as ThematicCategories
-                    )
-                  }
-                  }
+                  onPress={() => setActiveCategory("all")}
                   className={`px-4 py-2 rounded-full mr-2 ${
-                    activeCategory === category.name
-                      ? "bg-primary/20 border border-primary"
+                    activeCategory === "all"
+                      ? "bg-primary/10 border border-primary"
                       : "bg-white dark:bg-black"
                   }`}
                 >
-                  <Text
+                  <TransText
+                    title="categories.all"
                     className={
-                      activeCategory === category.name
+                      activeCategory === "all"
                         ? "text-primary font-medium"
                         : "text-foreground"
                     }
-                  >
-                    {category.name}
-                  </Text>
+                  />
                 </TouchableOpacity>
-              ))}
+                {categories.map((category) => (
+                  <TouchableOpacity
+                    key={category.name}
+                    onPress={() => {
+                      console.log("category and active", category.name);
+                      setActiveCategory(category.name as ThematicCategories);
+                    }}
+                    className={`px-4 py-2 rounded-full mr-2 ${
+                      activeCategory === category.name
+                        ? "bg-primary/20 border border-primary"
+                        : "bg-white dark:bg-black"
+                    }`}
+                  >
+                    <TransText
+                      title={`categories.${category.name}`}
+                      className={
+                        activeCategory === category.name
+                          ? "text-primary font-medium"
+                          : "text-foreground"
+                      }
+                    />
+                  </TouchableOpacity>
+                ))}
+              </LRView>
             </ScrollView>
           </View>
 
           {activeFilter === "chronological" && (
-            <FilteredTab 
+            <FilteredTab
+              i18n={i18n}
               filteredExhibits={chronologicalCategories}
               setFilteredExhibits={setFilteredExhibits}
               exhibits={exhibits}
@@ -284,6 +299,7 @@ export default function SearchExhibitsScreen({
 
           {activeFilter === "thematic" && (
             <FilteredTab
+              i18n={i18n}
               filteredExhibits={thematicCategories}
               setFilteredExhibits={setFilteredExhibits}
               exhibits={exhibits}
@@ -294,45 +310,54 @@ export default function SearchExhibitsScreen({
           {!searchQuery &&
             activeFilter === "all" &&
             activeCategory === "all" && (
-              <View className="mb-6">
-                <Text className="text-foreground text-lg font-semibold mb-3">
-                  Recommended For You
-                </Text>
+              <View>
+                <LRView>
+                  <TransText
+                    title="exhibit.recommended"
+                    className="text-foreground text-lg font-semibold mb-3"
+                  />
+                </LRView>
                 {recommendedExhibits.map((exhibit) => (
-                  <SearchedExhibitCard key={exhibit.id} item={exhibit} />
+                  <SearchedExhibitCard
+                    // userId={user.id}
+                    key={exhibit.id}
+                    item={exhibit}
+                  />
                 ))}
               </View>
             )}
 
           {/* Search Results */}
           <View>
-            <View className="flex-row justify-between items-center mb-3">
-              <Text className="text-foreground text-lg font-semibold">
-                {searchQuery ? "Search Results" : "All Exhibits"}
-              </Text>
+            <LRView className="items-center justify-between mb-3 px-2">
+              <TransText
+                title={`search.result.${searchQuery ? "searchResult" : "allExhibits"}`}
+                className="text-foreground text-lg font-semibold"
+              />
               <Text className="text-gray-400">
                 {filteredExhibits.length} found
               </Text>
-            </View>
+            </LRView>
 
             {filteredExhibits.length > 0 ? (
               filteredExhibits.map((exhibit) => (
                 <SearchedExhibitCard key={exhibit.id} item={exhibit} />
               ))
             ) : (
-              <View className="bg-white rounded-lg p-6 items-center">
+              <View className="bg-white dark:bg-black rounded-lg p-6 items-center">
                 <Ionicons
                   name="search-outline"
                   size={50}
                   color={COLORS.light.primary}
                 />
-                <Text className="text-foreground text-lg font-medium mt-4">
-                  No exhibits found
-                </Text>
-                <Text className="text-gray-400 text-center mt-2">
-                  Try adjusting your search or filters to find what you are
-                  looking for
-                </Text>
+                <TransText
+                  title="exhibit.notFound"
+                  className="text-foreground text-lg font-medium mt-4"
+                />
+                <TransText
+                  title="exhibit.adjustFilter"
+                  className="text-gray-400 text-center mt-2"
+                />
                 <TouchableOpacity
                   onPress={() => {
                     setSearchQuery("");
@@ -341,7 +366,10 @@ export default function SearchExhibitsScreen({
                   }}
                   className="bg-primary mt-4 px-6 py-3 rounded-lg"
                 >
-                  <Text className="text-white font-medium">Clear Filters</Text>
+                  <TransText
+                    title="exhibit.clear"
+                    className="text-white font-medium"
+                  />
                 </TouchableOpacity>
               </View>
             )}

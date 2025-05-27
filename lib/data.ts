@@ -2,31 +2,77 @@
 import { MuseumImage } from "@/types";
 
 
-export const museumImages: MuseumImage[] = [
-    {
-        title: "Ancient Statue",
-        description: "A marble statue from the Roman Empire period.",
-        src: require("@/assets/images/welcome/welcome1.jpg"),
-    },
-    {
-        title: "Historical Map",
-        description: "A map detailing 18th-century trade routes.",
-        src: require("@/assets/images/welcome/welcome2.jpg"),
-    },
-    {
-        title: "Art Gallery",
-        description: "A collection of impressionist paintings.",
-        src: require("@/assets/images/welcome/welcome3.jpg"),
-    },
-    {
-        title: "Museum Exterior",
-        description: "The museum building at sunset.",
-        src: require("@/assets/images/welcome/welcome4.jpg"),
-    },
+export const museumImagesEn: MuseumImage[] = [
+  {
+    title: "Scan & Discover",
+    description: "Point your camera at any QR code next to an exhibit to instantly unlock detailed information, history, and multimedia content right on your device.",
+    src: require("@/assets/images/welcome/scan-page.png"),
+  },
+  {
+    title: "Your Multilingual Assistant",
+    description: "Have a question? Our smart chatbot is here to help! Ask about exhibits, museum services, or history in multiple languages including English, French, and Arabic.",
+    src: require("@/assets/images/welcome/chat-page.jpg"),
+  },
+  {
+    title: "Find Your Favorites",
+    description: "Easily search our entire collection, filter by category, period, or interest, and save your favorite exhibits to plan your visit or revisit them later.",
+    src: require("@/assets/images/welcome/search-page.jpg"),
+  },
+  {
+    title: "Welcome to the Museum Experience",
+    description: "Your personalized journey through art and history begins now. Explore interactive features, get personalized recommendations, and make the most of your visit with our app.",
+    src: require("@/assets/images/welcome/welcome4.jpg"),
+  }
+]
+
+
+export const museumImagesFr: MuseumImage[] = [
+  {
+    title: "Scannez & Découvrez",
+    description: "Pointez votre appareil photo vers n'importe quel code QR à côté d'une œuvre pour débloquer instantanément des informations détaillées, son histoire et du contenu multimédia directement sur votre appareil.",
+    src: require("@/assets/images/welcome/scan-page.png"),
+  },
+  {
+    title: "Votre Assistant Multilingue",
+    description: "Une question ? Notre chatbot intelligent est là pour vous aider ! Renseignez-vous sur les œuvres, les services du musée ou l'histoire en plusieurs langues, dont l'anglais, le français et l'arabe.",
+    src: require("@/assets/images/welcome/chat-page.jpg"),
+  },
+  {
+    title: "Trouvez Vos Favoris",
+    description: "Recherchez facilement dans toute notre collection, filtrez par catégorie, période ou intérêt, et sauvegardez vos œuvres préférées pour planifier votre visite ou les revoir plus tard.",
+    src: require("@/assets/images/welcome/search-page.jpg"),
+  },
+  {
+    title: "Bienvenue dans l'Expérience Musée",
+    description: "Votre voyage personnalisé à travers l'art et l'histoire commence maintenant. Explorez des fonctionnalités interactives, obtenez des recommandations personnalisées et profitez au maximum de votre visite grâce à notre application.",
+    src: require("@/assets/images/welcome/welcome4.jpg"),
+  }
+]
+
+export const museumImagesAr: MuseumImage[] = [
+  {
+    title: "امسح واكتشف",
+    description: "وجّه كاميرا جهازك نحو أي رمز QR بجانب قطعة معروضة لفتح معلومات مفصلة وتاريخها ومحتوى وسائط متعددة على الفور على جهازك.",
+    src: require("@/assets/images/welcome/scan-page.png"),
+  },
+  {
+    title: "مساعدك متعدد اللغات",
+    description: "هل لديك سؤال؟ روبوت المحادثة الذكي الخاص بنا هنا لمساعدتك! اسأل عن المعروضات أو خدمات المتحف أو التاريخ بلغات متعددة بما في ذلك الإنجليزية والفرنسية والعربية.",
+    src: require("@/assets/images/welcome/chat-page.jpg"),
+  },
+  {
+    title: "اعثر على مفضلاتك",
+    description: "ابحث بسهولة في مجموعتنا الكاملة، وقم بالتصفية حسب الفئة أو الفترة أو الاهتمام، واحفظ معروضاتك المفضلة لتخطيط زيارتك أو الرجوع إليها لاحقًا.",
+    src: require("@/assets/images/welcome/search-page.jpg"),
+  },
+  {
+    title: "مرحباً بك في تجربة المتحف",
+    description: "رحلتك الشخصية عبر الفن والتاريخ تبدأ الآن. استكشف الميزات التفاعلية، واحصل على توصيات مخصصة، واستفد إلى أقصى حد من زيارتك من خلال تطبيقنا.",
+    src: require("@/assets/images/welcome/welcome4.jpg"),
+  }
 ];
 
-
-export const MUSEUM_EXHIBITS = [ 
+export const MUSEUM_EXHIBITS = [
   {
     id: 1,
     title: "The Starry Night",
@@ -109,10 +155,36 @@ export const MUSEUM_INFO = {
   description:
     "AMUSE is a modern art museum featuring contemporary works from around the world. Our mission is to inspire and educate visitors through immersive art experiences.",
   location: "123 Art Avenue, Creativity City",
-  hours: "Tuesday - Sunday: 10:00 AM - 6:00 PM, Closed on Mondays",
-  admission: "Adults: $15, Students & Seniors: $10, Children under 12: Free",
-  specialFeatures: "Interactive exhibits, guided tours, art workshops, and a café with panoramic views of the city.",
-}
+
+  // Structured hours for easier processing by the LLM
+  hours: {
+    days_en: "Tuesday - Sunday", // English source
+    open_time_en: "10:00 AM",    // English source
+    close_time_en: "6:00 PM",   // English source
+    closed_on_en: "Mondays",     // English source
+    // Optional: keep the original full text for simple English display or LLM fallback
+    full_text_en: "Tuesday - Sunday: 10:00 AM - 6:00 PM. Closed on Mondays."
+  },
+
+  // Structured admission for easier processing by the LLM
+  admission: {
+    adults_en: "$15",              // English source
+    students_seniors_en: "$10",  // English source
+    children_under_12_en: "Free",// English source
+    // Optional: keep the original full text for simple English display or LLM fallback
+    full_text_en: "Adults: $15, Students & Seniors: $10, Children under 12: Free"
+  },
+
+  // Special features can be a string or an array for easier listing by the LLM
+  specialFeatures: "Interactive exhibits, guided tours, art workshops, and a café with panoramic views of the city.", // As a single string (LLM will parse/translate)
+  // OR, as a list (might be easier for LLM to list in other languages):
+  // specialFeatures_list_en: [ // English source
+  //   "Interactive exhibits",
+  //   "guided tours",
+  //   "art workshops",
+  //   "a café with panoramic views of the city"
+  // ]
+};
 
 // ! categories
 export const categories = [
@@ -191,8 +263,17 @@ export const EXHIBIT_RATINGS: Record<number, { rating: number; reviews: number }
   8: { rating: 4.8, reviews: 195 },
 };
 
+export const navigationItems = [
+  "home",
+  "exhibits",
+  "chatbot",
+  "scanner",
+  "profile",
+  "history"
+]
 
-export const FIRST_MESSAGE = `Hello! I'm your AMUSE museum guide. I can help you discover exhibits and answer questions about our collections.What are you interested in seeing today?`;
-
+export const FIRST_MESSAGE_ENGLISH = `Hello! I'm your AMUSE museum guide. I can help you discover exhibits and answer questions about our collections.What are you interested in seeing today?`;
+export const FIRST_MESSAGE_FRENCH = `Bonjour ! Je suis votre guide pour le musée AMUSE. Je peux vous aider à découvrir les expositions et à répondre à vos questions sur nos collections. Que souhaitez-vous découvrir aujourd'hui ?`;
+export const FIRST_MESSAGE_ARABIC = `مرحباً! أنا مرشدكم في متحف AMUSE. يمكنني مساعدتكم على اكتشاف المعروضات والإجابة على أسئلتكم حول مجموعاتنا. ماذا تودون أن تكتشفوا اليوم؟`;
 
 
