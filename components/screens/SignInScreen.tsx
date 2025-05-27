@@ -47,13 +47,13 @@ export default function SignInScreen() {
   });
 
   // Check if Apple Authentication is available
-  React.useEffect(() => {
-    const checkAppleAuth = async () => {
-      const isAvailable = await AppleAuthentication.isAvailableAsync();
-      setAppleAuthAvailable(isAvailable);
-    };
-    checkAppleAuth();
-  }, []);
+  // React.useEffect(() => {
+  //   const checkAppleAuth = async () => {
+  //     const isAvailable = await AppleAuthentication.isAvailableAsync();
+  //     // setAppleAuthAvailable(isAvailable);
+  //   };
+  //   checkAppleAuth();
+  // }, []);
 
   // Google Auth setup
   // const [request, response, promptAsync] = Google.useAuthRequest({
