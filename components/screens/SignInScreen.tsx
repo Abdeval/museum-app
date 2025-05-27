@@ -14,7 +14,7 @@ import {
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
+// import * as Google from "expo-auth-session/providers/google";
 import * as AppleAuthentication from "expo-apple-authentication";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { COLORS } from "@/constants/Colors";
@@ -38,7 +38,6 @@ export default function SignInScreen() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [appleAuthAvailable, setAppleAuthAvailable] = useState(false);
   const { signIn } = useSession();
   const { t, i18n } = useTranslation();
   // ! Form validation states

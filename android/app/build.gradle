@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.anonymous.museumapp'
+    namespace 'com.abdou.oauthgoogle'
     defaultConfig {
-        applicationId 'com.anonymous.museumapp'
+        applicationId 'com.abdou.oauthgoogle'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
