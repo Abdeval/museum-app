@@ -27,7 +27,7 @@ import { useSession } from "@/context/AuthProvider";
 import LRView from "../ui/LRView";
 import TransText from "../ui/TransText";
 import { useTranslation } from "react-i18next";
-import { GoogleSignin, isErrorWithCode, isSuccessResponse, statusCodes } from "@react-native-google-signin/google-signin";
+// import { GoogleSignin, isErrorWithCode, isSuccessResponse, statusCodes } from "@react-native-google-signin/google-signin";
 
 // Ensure WebBrowser redirects properly
 WebBrowser.maybeCompleteAuthSession();
@@ -57,14 +57,9 @@ export default function SignInScreen() {
 
   // Google Auth setup
   // const [request, response, promptAsync] = Google.useAuthRequest({
-  //   clientId:
-  //     "383898926660-2f02cdkjgnllc1n6qa0cjj59ga8g4s78.apps.googleusercontent.com", // Replace with your actual client ID
-  //   iosClientId:
-  //     "383898926660-2nmio2r5vifq2nmene4c5oq4d25gmr91.apps.googleusercontent.com",
-  //   androidClientId:
-  //     "383898926660-g8mlcvancgq95cam4bdpv5gpss2e67n0.apps.googleusercontent.com",
-  //   webClientId:
-  //     "383898926660-2f02cdkjgnllc1n6qa0cjj59ga8g4s78.apps.googleusercontent.com",
+  //   iosClientId: process.env.IOS_CLIENT_ID,
+  //   androidClientId: process.env.ANDROID_CLIENT_ID, 
+  //   webClientId: process.env.WEB_CLIENT_ID
   // });
 
   // // todo: Handle Google sign-in response
@@ -77,58 +72,63 @@ export default function SignInScreen() {
   //   }
   // }, [response]);
 
-  const signInWithGoogle = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const response = await GoogleSignin.signIn();
-      if (isSuccessResponse(response)) {
-        // setState({ userInfo: response.data.user });
-        console.log("Google auth successful:", response.data.user);
-      } else {
-        // sign in was cancelled by user
-        console.log("you've canceled the process of logging...");
-      }
-    } catch (error: any) {
-      if (isErrorWithCode(error)) {
-        switch (error.code) {
-          case statusCodes.IN_PROGRESS:
-            // operation (eg. sign in) already in progress
-            break;
-          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-            // Android only, play services not available or outdated
-            break;
-          default:
-          // some other error happened
-        }
-      } else {
-        console.log(error);
-        // an error that's not related to google sign in occurred
-      }
-    }
-  };
+  // const signInWithGoogle = async () => {
+  //   try {
+  //     await GoogleSignin.hasPlayServices();
+  //     const response = await GoogleSignin.signIn();
+  //     if (isSuccessResponse(response)) {
+  //       // setState({ userInfo: response.data.user });
+  //       console.log("Google auth successful:", response.data.user);
+  //     } else {
+  //       // sign in was cancelled by user
+  //       console.log("you've canceled the process of logging...");
+  //     }
+  //   } catch (error: any) {
+  //     if (isErrorWithCode(error)) {
+  //       switch (error.code) {
+  //         case statusCodes.IN_PROGRESS:
+  //           // operation (eg. sign in) already in progress
+  //           break;
+  //         case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+  //           // Android only, play services not available or outdated
+  //           break;
+  //         default:
+  //         // some other error happened
+  //       }
+  //     } else {
+  //       console.log(error);
+  //       // an error that's not related to google sign in occurred
+  //     }
+  //   }
+  // };
 
   // ! Handle login with email/password
   const handleLogin = async () => {
     if (!validateForm("SIGNIN", { email, password }, setErrors)) {
-      return;
+      return; // Arrêter si la validation échoue
     }
 
-    setIsLoading(true);
+    setIsLoading(true); // Activer l'indicateur de chargement
 
     try {
-      // todo: Here you would integrate with your authentication service
-      // todo: For example, Firebase, Supabase, or your custom backend
-      signIn({ email, password });
-      // If successful, proceed
+      // 2. Appeler la fonction signIn et attendre (await) sa complétion
+      // Si signIn lève une erreur, l'exécution sautera directement au bloc catch.
+      await signIn({ email, password }); // Assurez-vous que signIn est la fonction améliorée
+
+      // 3. Si signIn se termine sans erreur, la connexion est réussie
       handleSuccessfulLogin("Email");
-    } catch (error) {
-      console.error("Login error:", error);
-      Alert.alert(
-        "Login Failed",
-        "Invalid email or password. Please try again."
-      );
+    } catch (error: any) {
+      // 4. Gérer les erreurs levées par signIn
+      console.error("Erreur de connexion dans handleLogin:", error.message); // Journaliser le message d'erreur spécifique
+
+      // Afficher le message d'erreur convivial fourni par la fonction signIn
+      const messageToDisplay =
+        error.message ||
+        "Une erreur inattendue s'est produite. Veuillez réessayer.";
+      Alert.alert("Échec de la connexion", messageToDisplay);
     } finally {
-      setIsLoading(false);
+      // 5. Ce bloc s'exécute toujours, que la connexion réussisse ou échoue
+      setIsLoading(false); // Désactiver l'indicateur de chargement
     }
   };
 
@@ -159,10 +159,15 @@ export default function SignInScreen() {
     }
   };
 
-  // Handle successful login
   const handleSuccessfulLogin = (method: string) => {
-    console.log(`Logged in with ${method}`);
-    router.replace("/home");
+    console.log(`Connecté avec ${method}`);
+    // Remplacez la route actuelle par la page d'accueil pour empêcher l'utilisateur
+    // de revenir à l'écran de connexion avec le bouton "retour".
+    // Ajustez le chemin vers votre écran d'accueil principal dans Expo Router.
+    // Par exemple, si votre accueil est dans un groupe (root) et un layout onglets :
+    router.replace("/(root)/(tabs)/home");
+    // Ou si c'est une route simple :
+    // router.replace("/home");
   };
 
   return (
@@ -356,7 +361,7 @@ export default function SignInScreen() {
                   {/* Google Login */}
                   <TouchableOpacity
                     className="bg-primary-foreground dark:bg-black p-4 rounded-full"
-                    onPress={signInWithGoogle}
+                    // onPress={signInWithGoogle}
                     // disabled={!request}
                   >
                     <Ionicons name="logo-google" size={24} color="#DB4437" />
