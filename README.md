@@ -1,86 +1,113 @@
-Markdown
+# 🚀 Project Setup Guide
 
-# Welcome to Your Expo App 👋
+This guide helps you set up and run both the frontend (Expo) and backend (NestJS) for development.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+---
 
-This project includes both a frontend Expo application and a backend NestJS server located in the `server` directory.
+## 1. Backend Setup 💠
 
-## 🚀 Get Started
-
-Follow these steps to get your development environment up and running:
-
-### 1. Setup and Run the Backend Server ⚙️
-
-The backend server uses NestJS and Docker for the database.
+### 1.1 Navigate to the Server Directory
 
 ```bash
-# Navigate to the server directory
 cd server
+```
 
-# Install backend dependencies
+### 1.2 Install Backend Dependencies
+
+```bash
 npm install
+```
 
-# Reset and restart the database Docker container
-# This command uses docker-compose to manage the database.
+### 1.3 Reset and Restart the Database (Docker)
+
+```bash
 npm run db:dev:restart
+```
 
-# Return to the root project directory
+> Uses `docker-compose` to manage the database container.
+
+### 1.4 Return to the Root Directory
+
+```bash
 cd ..
-2. Install Frontend Dependencies 📱
-Now, let's install the packages for the Expo frontend.
+```
 
-Bash
+---
 
-# Ensure you are in the root project directory
+## 2. Frontend Setup 📱
+
+### 2.1 Install Frontend Dependencies
+
+Ensure you're in the root project directory:
+
+```bash
 npm install
-3. Start Both Frontend and Backend Development Servers ▶️
-You'll need two terminal windows or tabs for this:
+```
 
-Terminal 1: Start the Expo App (Frontend)
+---
 
-Bash
+## 3. Start Development Servers ▶️
 
-# Ensure you are in the root project directory
+You’ll need **two terminal windows/tabs**:
+
+### Terminal 1: Start the Expo Frontend
+
+```bash
 npx expo start
-In the output, you'll find options to open the app in a:
+```
 
-Development build
-Android emulator
-iOS simulator
-Expo Go, a limited sandbox for trying out app development with Expo
-Terminal 2: Start the NestJS Server (Backend)
+This provides options to open the app via:
 
-Bash
+- Development build
+- Android emulator
+- iOS simulator
+- Expo Go (limited sandbox)
 
-# Navigate to the server directory
+### Terminal 2: Start the NestJS Backend
+
+```bash
 cd server
-
-# Start the backend server in development mode
 npm run start:dev
-4. Connect Expo Go and Start Developing ✨
-Once the Expo development server (npx expo start) is running, it will display a QR code.
-Open the Expo Go app on your physical Android or iOS device.
-Scan the QR code using the Expo Go app.
-Your app should now load on your device.
-You can start developing by editing the files inside the app directory. This project uses file-based routing.
-🧹 Get a Fresh Project (Optional)
-If you want to reset the frontend starter code and begin with a blank app directory:
+```
 
-Bash
+---
 
-# Ensure you are in the root project directory
+## 4. Run on a Mobile Device ✨
+
+- After `npx expo start`, scan the QR code using the **Expo Go** app on Android/iOS.
+- The app should load on your device.
+- Begin developing by editing files in the `app` directory (uses file-based routing).
+
+---
+
+## 🧹 Optional: Reset the Frontend
+
+Start fresh by resetting the frontend:
+
+```bash
 npm run reset-project
-This command will move the existing starter code from the app directory to app-example and create a new, empty app directory.
+```
 
-📚 Learn More
-To learn more about developing your project with Expo, check out these resources:
+> Moves starter code to `app-example` and creates a new, empty `app` directory.
 
-Expo Documentation: https://docs.expo.dev/ - Learn fundamentals or explore advanced topics with official guides.
-Learn Expo Tutorial: https://docs.expo.dev/tutorial/introduction/ - A step-by-step guide to creating a project that runs on Android, iOS, and the web.
-🤝 Join the Community
-Connect with other developers creating universal apps:
+---
 
-Expo on GitHub: https://github.com/expo/expo - View the open-source platform and contribute.
-Discord Community: https://chat.expo.dev - Chat with Expo users and ask questions.
-<!-- end list -->
+## 📚 Resources to Learn More
+
+- **Expo Documentation**  
+  [https://docs.expo.dev/](https://docs.expo.dev/)
+
+- **Learn Expo Tutorial**  
+  [https://docs.expo.dev/tutorial/introduction/](https://docs.expo.dev/tutorial/introduction/)
+
+---
+
+## 🤝 Community
+
+- **Expo on GitHub**  
+  [https://github.com/expo/expo](https://github.com/expo/expo)
+
+- **Discord Community**  
+  [https://chat.expo.dev](https://chat.expo.dev)
+
+---
